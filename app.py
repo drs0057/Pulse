@@ -1,13 +1,22 @@
-import mysql.connector
-from sqlalchemy import create_engine, text
-from sqlalchemy.orm import sessionmaker
-engine = create_engine('mysql+mysqlconnector://tigers0057:0L85Z4IkBslEP5T3MMjp@musicdb.c8wcmnsrregt.us-east-2.rds.amazonaws.com:3306/music')
-Session = sessionmaker(bind=engine, autocommit=False, autoflush=True)
+from flask import Flask, redirect, url_for, render_template
 
-session = Session()
-session.execute(text("INSERT INTO users (username, password) VALUES ('test1', 'test1')"))
-session.commit()
-result = session.execute(text("SELECT * FROM users"))
-for row in result:
-    print(row)
-session.close()
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return render_template('index.html')
+
+@app.route("/login", methods=["POST", "GET"])
+def login():
+    return render_template("login.html")
+
+# @app.route("/<user>")
+# def user(user):
+#     return f"<h1>{user}<h1>"
+
+if __name__ == '__main__':
+    app.run(debug=True) 
+
+
+
+# engine = db.create_engine("mysql://root:Tigers-315700@localhost/music", echo=True)
