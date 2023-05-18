@@ -1,0 +1,24 @@
+body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
+    font-family: 'Roboto';
+    color: white;
+    background-color: #222222;
+}
+.navbar.navbar-expand-lg.bg-body-tertiary{
+    margin-top: 30px;
+}
+.navbar.navbar-expand-lg.bg-body-tertiary .nav-link:hover{
+    color: rgb(40, 145, 181);
+}
+#first-nav-item{
+    margin-left: 30px;
+}
+#nav_name{
+    font-size: 40px;
+    text-align: left;
+}
+#navContent{
+    font-size: 25px;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}

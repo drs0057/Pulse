@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Register Account{% endblock %}
+
+{% block content %}
+<form method="post">
+    <input type="text" name="name" placeholder="First Name">
+    <p></p>
+    <input type="text" name="username" placeholder="Spotify Username">
+    <p></p>
+    <input type="text" name="password" placeholder="Spotify Password">
+    <p></p>
+    <input type="submit" value="submit">
+</form>
+{% endblock %}

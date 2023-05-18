@@ -2,16 +2,24 @@
 {% block title %}Login Page{% endblock %}
 
 {% block content %}
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for msg in messages %}
-                <p>{{msg}}</p>
-            {% endfor %}
-        {% endif %}
-    {% endwith %}
-<form action="#" method="post">
-    <p>Name:</p>
-    <p><input type="text" name="name"></p>
-    <p><input type="submit" value="submit"></p>
+<p>Login:</p>
+<form method="post">
+    <input type="text" name="username" placeholder="Spotify Username">
+    <p></p>
+    <input type="text" name="password" placeholder="Spotify Password">
+    <p></p>
+    <input type="submit" value="submit">
 </form>
 {% endblock %}
+<!-- 
+<div class="input-group flex-nowrap">
+    <span class="input-group-text" id="addon-wrapping">@</span>
+    <input type="text" class="form-control" placeholder="Username" aria-label="Username"
+        aria-describedby="addon-wrapping">
+</div> -->
+
+<!-- <div class="input-group" style="margin-right: 50px;">
+    <input type="text" class="form-control" placeholder="Username" aria-label="Username"
+        aria-describedby="addon-wrapping" name="name">
+    <input type="submit" name="submit" value="Submit" method="post">
+</div> -->
