@@ -2,13 +2,39 @@
 {% block title %}Register Account{% endblock %}
 
 {% block content %}
+<p style="width: 500px; word-wrap: break-word;">
+Music Trivia the Game requires a connection to your Spotify account. Please 
+enter your Spotify username and password
+below. Your information will be safely stored and protected:
+</p>
 <form method="post">
-    <input type="text" name="name" placeholder="First Name">
-    <p></p>
-    <input type="text" name="username" placeholder="Spotify Username">
-    <p></p>
-    <input type="text" name="password" placeholder="Spotify Password">
-    <p></p>
-    <input type="submit" value="submit">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="First Name" aria-label="Username"
+                    aria-describedby="basic-addon1" name="name">
+            </div>
+        </div>
+    </div>    
+    <div class="row">
+        <div class="col-md-2">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Spotify Username" aria-label="Username"
+                    aria-describedby="basic-addon1" name="username">
+            </div>
+        </div>
+    </div>    
+    <div class="row">
+        <div class="col-md-2">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Spotify Password" aria-label="Username"
+                    aria-describedby="basic-addon1" name="password">
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-secondary" value="submit">Submit</button>
 </form>
+<p></p>
+<div>Already have an account?</div> 
+<a class="link" href="/login">Login here.</a>
 {% endblock %}

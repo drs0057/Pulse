@@ -2,14 +2,33 @@
 {% block title %}Login Page{% endblock %}
 
 {% block content %}
-<p>Login:</p>
+<h3>Login:</h3>
+<p></p>
 <form method="post">
-    <input type="text" name="username" placeholder="Spotify Username">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Spotify Username" aria-label="Username"
+                    aria-describedby="basic-addon1" name="username">
+            </div>
+        </div>
+    </div>
     <p></p>
-    <input type="text" name="password" placeholder="Spotify Password">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" placeholder="Spotify Password" aria-label="Username"
+                    aria-describedby="basic-addon1" name="password">
+            </div>
+        </div>
+    </div>    
     <p></p>
-    <input type="submit" value="submit">
+    <button type="submit" class="btn btn-secondary" value="submit">Submit</button>
+    <p></p>
 </form>
+<p></p>
+<div>Don't have an account?</div>
+<a class="link" href="/register">Register here.</a>
 {% endblock %}
 <!-- 
 <div class="input-group flex-nowrap">

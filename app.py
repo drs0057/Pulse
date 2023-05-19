@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
+import bcrypt
 # from database import db
 # from models import Users
 
@@ -17,13 +18,28 @@ class Users(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255))
     username = db.Column(db.String(255))
-    password = db.Column(db.String(255))
+    hash_pw = db.Column(db.String(255))
 
-    def __init__(self, name, username, password):
+    def __init__(self, name, username, hash_pw):
         self.name = name
         self.username = username
-        self.password = password
+        self.hash_pw = hash_pw
 
+def duplicate_username(username):
+    """Determines if a username already exists in the db."""
+    users = Users.query.all()
+    for user in users:
+        if user.username == username:
+            return True
+    return False
+
+def find_user(username):
+    """Returns the corresponding user object from the db."""
+    users = Users.query.all()
+    for user in users:
+        if user.username == username:
+            return user
+    return None
 
 @app.route("/")
 def home():
@@ -31,21 +47,28 @@ def home():
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
+    found_user = None
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
-        users = Users.query.all()
-        for user in users:
-            if user.username == username and user.password == password:
-                found_user = user
+        found_user = find_user(username)
         if found_user:
-            session.permanent = True
-            session["username"] = username
-            flash("Login successful.")
-            return redirect(url_for("home"))
+            # Check password against hash
+            password_bytes = password.encode('utf-8')
+            hash_bytes = found_user.hash_pw.encode('utf-8')
+            is_valid = bcrypt.checkpw(password_bytes, hash_bytes)
+            if is_valid:
+                session.permanent = True
+                session["username"] = username
+                flash("Login successful.")
+                return redirect(url_for("home"))
+            else:
+                flash("Incorrect password.")
+                return redirect(url_for("login"))
         else:
             flash("Incorrect username or password.")
             return redirect(url_for("login"))
+        
     if request.method == "GET":
         if "username" in session:
             flash("Already logged in.")
@@ -57,17 +80,21 @@ def login():
 def logout():
     if "username" in session:
         username = session["username"]
-        flash(f"You have been logged out, {username}", "info")
+        user = find_user(username)
         session.pop("username", None)
-    return redirect(url_for("login"))
+        flash(f"You have been logged out, {user.name}.", "info")
+        return redirect(url_for("login"))
+    else:
+        flash("You are not logged in.")
+        return redirect(url_for("login"))
 
 @app.route("/account", methods=["POST", "GET"])
 def account():
     if "username" in session:
-        username = session["username"]
-        return render_template("account.html", username=username)
+        user = find_user(session["username"])
+        return render_template("account.html", user=user)
     else:
-        flash("You are not logged in.")
+        flash("You must log in to view account information.")
         return redirect(url_for("login"))
     
 @app.route("/register", methods=["POST", "GET"])
@@ -79,21 +106,27 @@ def register():
         if name == "" or username == "" or password == "":
             flash("You must fill out all fields.")
             return redirect(url_for("register"))
+        elif duplicate_username(username):
+            flash("This user already exists.")
+            return redirect(url_for("register"))
         else:
-            user = Users(name, username, password)
+            # Hash and salt password
+            password_bytes = password.encode('utf-8')
+            salt = bcrypt.gensalt()
+            hash_pw = bcrypt.hashpw(password_bytes, salt)
+            user = Users(name, username, hash_pw)
             db.session.add(user)
             db.session.commit()
             flash("Your account has been created.")
             return redirect(url_for("home"))
     else:
-        flash("Music Trivia the Game requires a connection to your Spotify account. Please enter your Spotify login and password below:")
         return render_template("register.html")
     
 @app.route("/game_data")
 def game_data():
     if "username" in session:
-        username = session["username"]
-        return render_template("game_data.html", username=username)
+        user = find_user(session["username"])
+        return render_template("game_data.html", user=user)
     else:
         flash("You must login before viewing game data.")
         return redirect(url_for("login"))
@@ -106,3 +139,5 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(port=8000, debug=True)
+    
+
