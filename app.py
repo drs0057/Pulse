@@ -2,9 +2,11 @@ from flask import Flask, redirect, url_for, render_template, request, session, f
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 import bcrypt
+import api
+from random import randint
 # from database import db
 # from models import Users
-
+# source ~/.bashrc
 
 app = Flask(__name__)
 app.secret_key = "Tigers-315700"
@@ -41,9 +43,19 @@ def find_user(username):
             return user
     return None
 
-@app.route("/")
+@app.route("/", methods=["POST", "GET"])
 def home():
-    return render_template('home.html')
+    if request.method == "POST":
+        return redirect(api.user_access_url())
+    else:
+        if "username" in session:
+            if "access_token" in session:
+                return redirect(url_for("play"))
+            else:
+                return render_template("home.html")
+        else:
+            flash("You must login first to play.")
+            return redirect(url_for("login"))
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -75,18 +87,38 @@ def login():
             return redirect(url_for("home"))
         else:
             return render_template("login.html")
+
     
 @app.route("/logout", methods=["POST", "GET"])
 def logout():
     if "username" in session:
         username = session["username"]
         user = find_user(username)
-        session.pop("username", None)
+        session.clear()
         flash(f"You have been logged out, {user.name}.", "info")
         return redirect(url_for("login"))
     else:
         flash("You are not logged in.")
         return redirect(url_for("login"))
+    
+@app.route("/play", methods=["POST", "GET"])
+def play():
+    code = request.args.get('code', '')
+    access_token, refresh_token = api.request_access_refresh_token(code)
+    session["access_token"] = access_token
+    if request.method == "POST":
+        pass  # Game logic
+    else:
+        if "username" in session:
+            user = find_user(session["username"])
+            library_size = 1000
+            offset = randint(0, library_size)
+            # songs = api.request_user_songs(access_token, offset)
+            return render_template("play.html", user=user, access_token=access_token)
+        else:
+            flash("You must log in first to play.")
+            return redirect(url_for("login"))
+        
 
 @app.route("/account", methods=["POST", "GET"])
 def account():
@@ -134,6 +166,7 @@ def game_data():
 @app.route("/view_users")
 def view_users():
     return render_template("view_users.html", users=Users.query.all())
+
 
 if __name__ == '__main__':
     with app.app_context():
