@@ -20,6 +20,8 @@ def generate_random_string(length):
     random_string = ''.join(choice(letters_and_digits) for _ in range(length))
     return random_string
 
+def get_auth_header(token):
+    return {"Authorization": "Bearer " + token}
 
 def user_access_url():
     url = 'https://accounts.spotify.com/authorize?'
@@ -29,7 +31,7 @@ def user_access_url():
         'redirect_uri': redirect_uri,
         'state': generate_random_string(16),
         'scope': 'user-library-read streaming user-read-email user-read-private',
-        'show_dialog': True
+        'show_dialog': False
     }
     user_access_url = url + urlencode(data)
     return user_access_url
@@ -72,21 +74,46 @@ def request_refreshed_access_token(refresh_token):
     return refreshed_access_token
 
 
-def get_auth_header(token):
-    return {"Authorization": "Bearer " + token}
-
-def request_user_songs(token, offset):
+def request_user_songs(token, offset, limit, songs):
     url = "https://api.spotify.com/v1/me/tracks"
     headers = get_auth_header(token)
-    query = f"?market=US&offset={offset}&limit=50"
+    query = f"?market=US&offset={offset}&limit={limit}"
     query_url = url + query
     result = requests.get(query_url, headers=headers)
     json_result = json.loads(result.content)
     items = json_result["items"]
-    songs = []
     for item in items:
-        songs.append(item["track"]["name"])
+        songs.append({
+            'name': item["track"]["name"], 
+            'artist': item["track"]["artists"][0]["name"]
+            # 'href': item["track"]["href"]
+        })
     return songs
+
+def songs_by_artist(songs, artist):
+    songs_by_artist = []
+    for song in songs:
+        if song["artist"] == artist:
+            songs_by_artist.append(song["name"])
+    return songs_by_artist
+
+
+def request_user_info(token):
+    url = "https://api.spotify.com/v1/me"
+    headers = get_auth_header(token)
+    result = requests.get(url, headers=headers)
+    json_result = json.loads(result.content)
+    return json_result["images"][0]["url"], json_result["display_name"]
+
+def request_user_library_size(token):
+    url = "https://api.spotify.com/v1/me/tracks"
+    headers = get_auth_header(token)
+    query = f"?market=US&offset=0&limit=1"
+    query_url = url + query
+    result = requests.get(query_url, headers=headers)
+    json_result = json.loads(result.content)
+    library_size = json_result["total"]
+    return library_size
 
 
 # def search_for_artist(token, artist_name):

@@ -2,14 +2,15 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<p style="width: 500px; word-wrap: break-word;">
-Music Trivia the Game requires access to your Spotify account
-in order to play. Click the button below to be redirected
-to Spotify:</p>
+<div style="width: 30%; word-wrap: break-word;" class="wrapper fs-6">
+    Music Trivia the Game requires access to your Spotify account
+    in order to play. Click the button below to be redirected
+    to Spotify:
+    <p></p>
+    <form method="post">
+        <button type="submit" class="btn btn-success">Go to Spotify</button>
+    </form>
+</div>
 
-<form method="post">
-    <button type="submit" class="btn btn-success">Go to Spotify</button>
-</form>
 
-<p>PLAY THE GAME</p>
 {% endblock %}

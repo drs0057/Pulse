@@ -43,10 +43,19 @@ def find_user(username):
             return user
     return None
 
+def add_token_to_session(code):
+    """Adds the access token to the session."""
+    if "access_token" in session:
+        return
+    else:
+        access_token, refresh_token = api.request_access_refresh_token(code)
+        session["access_token"] = access_token
+
+
 @app.route("/", methods=["POST", "GET"])
 def home():
     if request.method == "POST":
-        return redirect(api.user_access_url())
+        return redirect(api.user_access_url())  # Reroutes to /play
     else:
         if "username" in session:
             if "access_token" in session:
@@ -54,7 +63,7 @@ def home():
             else:
                 return render_template("home.html")
         else:
-            flash("You must login first to play.")
+            flash("You must log in first to play.")
             return redirect(url_for("login"))
 
 @app.route("/login", methods=["POST", "GET"])
@@ -104,21 +113,43 @@ def logout():
 @app.route("/play", methods=["POST", "GET"])
 def play():
     code = request.args.get('code', '')
-    access_token, refresh_token = api.request_access_refresh_token(code)
-    session["access_token"] = access_token
+    add_token_to_session(code)
     if request.method == "POST":
-        pass  # Game logic
+        if 'shuffleArtist' in request.form:
+            return redirect(url_for("play_artist"))
+        if 'shuffleLibrary' in request.form:
+            return redirect(url_for("play_library"))
     else:
         if "username" in session:
-            user = find_user(session["username"])
-            library_size = 1000
-            offset = randint(0, library_size)
-            # songs = api.request_user_songs(access_token, offset)
-            return render_template("play.html", user=user, access_token=access_token)
+            access_token = session["access_token"]
+            profile_pic_url, display_name = api.request_user_info(access_token)
+            return render_template("play.html", access_token=access_token, \
+            profile_pic_url=profile_pic_url, display_name=display_name)
         else:
             flash("You must log in first to play.")
             return redirect(url_for("login"))
-        
+
+@app.route("/play/artist", methods=["POST", "GET"])
+def play_artist():
+    if request.method == "POST":
+        pass
+    else:
+        # Must gather the entire library then sort by the artist
+        if "username" in session:
+            token = session["access_token"]
+            library_size = api.request_user_library_size(token)
+            num_requests, last_limit_size = divmod(library_size, 50)
+            offset = 0
+            songs = []
+            for _ in range(num_requests):
+                api.request_user_songs(token, offset, 50, songs)
+                offset += 50
+            # Gather remainder of songs
+            api.request_user_songs(token, offset, last_limit_size, songs)
+            return render_template("play_artist.html", songs=songs)
+        else:
+            flash("You must log in first to play.")
+            return redirect(url_for("login"))
 
 @app.route("/account", methods=["POST", "GET"])
 def account():

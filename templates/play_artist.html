@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Music Trivia{% endblock %}
+{% block title %}Shuffle Artist{% endblock %}
 
 {% block content %}
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
@@ -7,18 +7,15 @@
 
 <body>
     <div class="wrapper">
-        <p>Welcome, {{display_name}} </p>
         <img src="{{profile_pic_url}}">
         <p></p>
-        <p>Choose a gamemode:</p>
-        <form method="post">
-            <button type="submit" class="btn btn-secondary" name="shuffleArtist">Shuffle by artist</button>
-            <button type="submit" class="btn btn-secondary" name="shuffleLibrary">Shuffle entire library</button>
-        </form>
     </div>
     <!-- {% for song in songs %}
     {{song}},
     {% endfor %} -->
 </body>
+{% for song in songs %}
+{{ song["name"] }}
+{% endfor %}
 <scipt src="play_script.js"></scipt>
 {% endblock %}
