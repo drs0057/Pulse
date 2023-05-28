@@ -3,19 +3,79 @@
 
 {% block content %}
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
-<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
+<!-- <scipt src="play_script.js"></scipt> -->
+<script>
+// On the first click, the song will play. Following clicks will pause/unpause.
+var firstClickFlag = true;
+var device_id;
+var uri;
+var songs = JSON.parse('{{ songs|tojson }}');
+function chooseSong(songs) {
+    length = songs.length;
+    randomIndex = Math.floor(Math.random() * length);
+    uri = songs[randomIndex].uri
+    console.log(uri)
+}
+window.onload = () => {
+    chooseSong(songs)
+}
+window.onSpotifyWebPlaybackSDKReady = () => {
+    const token = '{{ token }}';
+    const player = new Spotify.Player({
+        name: 'Web Playback SDK Quick Start Player',
+        getOAuthToken: cb => { cb(token); },
+        volume: 0.5
+    });
+    // ERRORS:
+    player.addListener('not_ready', ({ device_id }) => {
+        console.log('Device ID has gone offline', device_id);
+    });
+    player.addListener('initialization_error', ({ message }) => {
+        console.error(message);
+    });
+    player.addListener('authentication_error', ({ message }) => {
+        console.error(message);
+    });
+    player.addListener('account_error', ({ message }) => {
+        console.error(message);
+    });
+    // Ready
+    player.addListener('ready', ({device_id: ID}) => {
+        console.log('Ready with Device ID', ID);
+        device_id = ID;
+    });
+    document.getElementById('togglePlay').onclick = () => {
+        if (firstClickFlag) {
+            playSong(device_id, uri);
+            firstClickFlag = false;
+        }
+        player.togglePlay();
+    };
+    player.connect();
+}
 
+function playSong(device_id, uri) {
+    const songUri = uri;
+    const token = '{{ token }}';
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ uris: [songUri] })
+    })
+}
+</script>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
 <body>
     <div class="wrapper">
         <img src="{{profile_pic_url}}">
+        <button type="submit" class="btn btn-secondary" id="togglePlay">Play/Pause</button>
         <p></p>
     </div>
-    <!-- {% for song in songs %}
-    {{song}},
-    {% endfor %} -->
+    {% for song in songs %}
+    <p>{{song["name"], song["uri"]}}</p>
+    {% endfor %}
 </body>
-{% for song in songs %}
-{{ song["name"] }}
-{% endfor %}
-<scipt src="play_script.js"></scipt>
 {% endblock %}

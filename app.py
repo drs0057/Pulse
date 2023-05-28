@@ -1,8 +1,9 @@
-from flask import Flask, redirect, url_for, render_template, request, session, flash
+from flask import Flask, redirect, url_for, render_template, request, session, flash, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from datetime import timedelta
 import bcrypt
 import api
+import json
 from random import randint
 # from database import db
 # from models import Users
@@ -50,6 +51,31 @@ def add_token_to_session(code):
     else:
         access_token, refresh_token = api.request_access_refresh_token(code)
         session["access_token"] = access_token
+
+progress = 0
+@app.route('/progress')
+def get_progress():
+    """Returns progress used to make progress bar."""
+    global progress
+    return jsonify(progress=progress)
+
+def songs_by_artist(artist, token):
+    global progress
+    progress = 0
+    # Must gather the entire library then sort by the artist
+    library_size = api.request_user_library_size(token)
+    num_requests, last_limit_size = divmod(library_size, 50)
+    progress_chunk = 100 / num_requests
+    offset = 0
+    songs = []
+    for _ in range(num_requests):
+        api.request_user_songs(token, offset, 50, songs)
+        offset += 50
+        progress += progress_chunk
+    # Gather remainder of songs
+    api.request_user_songs(token, offset, last_limit_size, songs)
+    # songs[] contains entire library, now filter by artist
+    return [song for song in songs if song["artist"] == artist]
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -115,16 +141,17 @@ def play():
     code = request.args.get('code', '')
     add_token_to_session(code)
     if request.method == "POST":
-        if 'shuffleArtist' in request.form:
+        if 'artist-field' in request.form:
             return redirect(url_for("play_artist"))
         if 'shuffleLibrary' in request.form:
             return redirect(url_for("play_library"))
+        flash("An error occurred. Please try again.")
+        return redirect(url_for("play"))
     else:
         if "username" in session:
-            access_token = session["access_token"]
-            profile_pic_url, display_name = api.request_user_info(access_token)
-            return render_template("play.html", access_token=access_token, \
-            profile_pic_url=profile_pic_url, display_name=display_name)
+            profile_pic_url, display_name = api.request_user_info(session["access_token"])
+            return render_template("play.html", profile_pic_url=profile_pic_url, \
+            display_name=display_name)
         else:
             flash("You must log in first to play.")
             return redirect(url_for("login"))
@@ -134,19 +161,13 @@ def play_artist():
     if request.method == "POST":
         pass
     else:
-        # Must gather the entire library then sort by the artist
         if "username" in session:
-            token = session["access_token"]
-            library_size = api.request_user_library_size(token)
-            num_requests, last_limit_size = divmod(library_size, 50)
-            offset = 0
-            songs = []
-            for _ in range(num_requests):
-                api.request_user_songs(token, offset, 50, songs)
-                offset += 50
-            # Gather remainder of songs
-            api.request_user_songs(token, offset, last_limit_size, songs)
-            return render_template("play_artist.html", songs=songs)
+            songs = songs_by_artist('John Mayer', session["access_token"])
+            # songs = [{'name': 'Assassin', 'uri': 'spotify:track:6OXt9aSIr4DSxSR3Qjrtgp'},
+            #          {'name': 'Edge of Desire', 'uri': 'spotify:track:5gbxzSqABThINGDb7vIiwe'}
+            #          ]
+            return render_template("play_artist.html", songs=songs, \
+            token=session["access_token"])
         else:
             flash("You must log in first to play.")
             return redirect(url_for("login"))

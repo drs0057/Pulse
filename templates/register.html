@@ -2,37 +2,25 @@
 {% block title %}Register Account{% endblock %}
 
 {% block content %}
-<p style="width: 500px; word-wrap: break-word;">
-Create a username and password for your Music Trivia account:
-</p>
-<form method="post">
-    <div class="row">
-        <div class="col-md-2">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="First Name" aria-label="Username"
-                    aria-describedby="basic-addon1" name="name">
-            </div>
-        </div>
-    </div>    
-    <div class="row">
-        <div class="col-md-2">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-                    aria-describedby="basic-addon1" name="username">
-            </div>
-        </div>
-    </div>    
-    <div class="row">
-        <div class="col-md-2">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Password" aria-label="Username"
-                    aria-describedby="basic-addon1" name="password">
-            </div>
-        </div>
-    </div>
-    <button type="submit" class="btn btn-secondary" value="submit">Submit</button>
-</form>
-<p></p>
-<div>Already have an account?</div> 
-<a class="link" href="/login">Login here.</a>
+<div class="wrapper">
+    <p class="login-field" style="width: 500px; word-wrap: break-word;">
+    Create a username and password for your Music Trivia account:
+    </p>
+    <br>
+    <form method="post">
+        <input type="text" class="form-control login-field" placeholder="First Name" aria-label="Username"
+            aria-describedby="basic-addon1" name="name">
+            <p></p>
+        <input type="text" class="form-control login-field" placeholder="Username" aria-label="Username"
+            aria-describedby="basic-addon1" name="username">
+            <p></p>
+        <input type="text" class="form-control login-field" placeholder="Password" aria-label="Username"
+            aria-describedby="basic-addon1" name="password">
+            <br>
+        <button type="submit" class="btn btn-secondary" value="submit">Submit</button>
+    </form>
+    <p></p>
+    <div>Already have an account?</div> 
+    <a class="link" href="/login">Login here.</a>
+</div>
 {% endblock %}

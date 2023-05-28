@@ -1,7 +1,7 @@
 body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
     font-family: 'Roboto';
-    color: white;
-    background-color: #111111;
+    color: #404240;
+    background-color: white;
 }
 .navbar.navbar-expand-lg.bg-body-tertiary{
     margin-top: 1.5%;
@@ -11,7 +11,7 @@ body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
 }
 .link{
     text-decoration: none;
-    color: white;
+    color: #404240;
 }
 .wrapper{
    width: 70%;
@@ -21,13 +21,33 @@ body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
    transform: translate(-50%, -50%);
    text-align: center;
 }
+.login-field{
+    width: 50%;
+    text-align: center;
+    margin: auto;
+}
 #navContent{
     margin: auto;
+}
+.progress-bar-container{
+    background-color: white;
+    outline: 2px solid #404240;
+    height: 20px;
+    width: 100%;
+}
+.progress-bar{
+    height: 100%;
+    background-color: #404240;
+    width: 0%;
 }
 /* * {
   outline: 1px solid red;
 } */
-/* .test{
+.test1{
     outline: 3px solid green !important;
     color: green !important;
-} */
+}
+.test2{
+    outline: 3px solid red !important;
+    color: green !important;
+}

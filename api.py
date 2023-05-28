@@ -85,8 +85,8 @@ def request_user_songs(token, offset, limit, songs):
     for item in items:
         songs.append({
             'name': item["track"]["name"], 
-            'artist': item["track"]["artists"][0]["name"]
-            # 'href': item["track"]["href"]
+            'artist': item["track"]["artists"][0]["name"],
+            'uri': item["track"]["uri"]
         })
     return songs
 

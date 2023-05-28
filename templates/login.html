@@ -2,43 +2,21 @@
 {% block title %}Login Page{% endblock %}
 
 {% block content %}
-<h3>Login:</h3>
-<p></p>
-<form method="post">
-    <div class="row">
-        <div class="col-md-2">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-                    aria-describedby="basic-addon1" name="username">
-            </div>
-        </div>
-    </div>
+<div class="wrapper">
+    <h3>Login:</h3>
     <p></p>
-    <div class="row">
-        <div class="col-md-2">
-            <div class="input-group mb-3">
-                <input type="text" class="form-control" placeholder="Password" aria-label="Username"
-                    aria-describedby="basic-addon1" name="password">
-            </div>
-        </div>
-    </div>    
+    <form method="post">
+        <input type="text" class="form-control login-field" placeholder="Username" aria-label="Username"
+            aria-describedby="basic-addon1" name="username">
+        <p></p>
+        <input type="text" class="form-control login-field" placeholder="Password" aria-label="Username"
+            aria-describedby="basic-addon1" name="password">
+        <p></p>
+        <button type="submit" class="btn btn-secondary" value="submit">Submit</button>
+        <br>
+    </form>
     <p></p>
-    <button type="submit" class="btn btn-secondary" value="submit">Submit</button>
-    <p></p>
-</form>
-<p></p>
 <div>Don't have an account?</div>
 <a class="link" href="/register">Register here.</a>
+</div>
 {% endblock %}
-<!-- 
-<div class="input-group flex-nowrap">
-    <span class="input-group-text" id="addon-wrapping">@</span>
-    <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-        aria-describedby="addon-wrapping">
-</div> -->
-
-<!-- <div class="input-group" style="margin-right: 50px;">
-    <input type="text" class="form-control" placeholder="Username" aria-label="Username"
-        aria-describedby="addon-wrapping" name="name">
-    <input type="submit" name="submit" value="Submit" method="post">
-</div> -->
