@@ -5,23 +5,43 @@
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 <!-- <scipt src="play_script.js"></scipt> -->
 <script>
-// On the first click, the song will play. Following clicks will pause/unpause.
-var firstClickFlag = true;
+var song_num = 0;
+var guess_num = 0;
 var device_id;
 var uri;
+var songName;
+var player;
 var songs = JSON.parse('{{ songs|tojson }}');
+
 function chooseSong(songs) {
     length = songs.length;
     randomIndex = Math.floor(Math.random() * length);
     uri = songs[randomIndex].uri
-    console.log(uri)
+    songName = songs[randomIndex].name
+    document.getElementById('album-image').src = songs[randomIndex].image_url
 }
+
+function playSong(device_id, uri) {
+    console.log('Song playing')
+    const songUri = uri;
+    const token = '{{ token }}';
+    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
+        method: 'PUT',
+        headers: {
+            'Authorization': 'Bearer ' + token,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ uris: [songUri] })
+    })
+}
+
 window.onload = () => {
     chooseSong(songs)
 }
+
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = '{{ token }}';
-    const player = new Spotify.Player({
+    player = new Spotify.Player({
         name: 'Web Playback SDK Quick Start Player',
         getOAuthToken: cb => { cb(token); },
         volume: 0.5
@@ -45,37 +65,51 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         device_id = ID;
     });
     document.getElementById('togglePlay').onclick = () => {
-        if (firstClickFlag) {
-            playSong(device_id, uri);
-            firstClickFlag = false;
-        }
-        player.togglePlay();
+        playSong(device_id, uri);
+        document.getElementById('start-div').style.display = 'none';
+        document.getElementById('guess-div').style.display = 'block';
     };
+    // Song guess was submitted
+    document.getElementById('song-submit').onclick = (event) => {
+        event.preventDefault();
+        const song_guess = document.getElementById('song-guess').value;
+        console.log(`Song submitted: ${song_guess}`)
+        if (song_guess == songName) {
+            console.log('Correct')
+            player.togglePlay()
+            song_num++;
+            guess_num = 0;
+            chooseSong(songs);
+            document.getElementById('song-guess').value = '';
+            document.getElementById('guess-div').style.display = 'none';
+            document.getElementById('start-div').style.display = 'block';
+        }
+    }
     player.connect();
 }
 
-function playSong(device_id, uri) {
-    const songUri = uri;
-    const token = '{{ token }}';
-    fetch(`https://api.spotify.com/v1/me/player/play?device_id=${device_id}`, {
-        method: 'PUT',
-        headers: {
-            'Authorization': 'Bearer ' + token,
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ uris: [songUri] })
-    })
-}
 </script>
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
 <body>
     <div class="wrapper">
-        <img src="{{profile_pic_url}}">
-        <button type="submit" class="btn btn-secondary" id="togglePlay">Play/Pause</button>
+        <img style="width: 40%; max-width: 400px;" id="album-image" src="">
         <p></p>
+        <!--Start game-->
+        <div id="start-div">
+            <button type="submit" class="btn btn-primary" id="togglePlay">Start</button>
+        </div>
+        <!--Submit guesses-->
+        <div id="guess-div" style="display: none;">
+            <form method="post">
+                <input type="text" class="form-control login-field" id="song-guess" 
+                placeholder="Song" style="width: 20%;">
+                <p></p>
+                <button type="submit"class="btn btn-primary" id="song-submit">Submit</button>
+            </form>
+        </div>
     </div>
-    {% for song in songs %}
-    <p>{{song["name"], song["uri"]}}</p>
-    {% endfor %}
+    <!-- {% for song in songs %}
+    <p>{{song["name"], song["uri"], song["image_url"]}}</p>
+    {% endfor %} -->
 </body>
 {% endblock %}

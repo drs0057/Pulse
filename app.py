@@ -142,11 +142,13 @@ def play():
     add_token_to_session(code)
     if request.method == "POST":
         if 'artist-field' in request.form:
+            session['artist-field'] = request.form['artist-field']
             return redirect(url_for("play_artist"))
         if 'shuffleLibrary' in request.form:
             return redirect(url_for("play_library"))
-        flash("An error occurred. Please try again.")
-        return redirect(url_for("play"))
+        else:
+            flash("An error occurred. Please try again.")
+            return redirect(url_for("play"))
     else:
         if "username" in session:
             profile_pic_url, display_name = api.request_user_info(session["access_token"])
@@ -162,12 +164,16 @@ def play_artist():
         pass
     else:
         if "username" in session:
-            songs = songs_by_artist('John Mayer', session["access_token"])
-            # songs = [{'name': 'Assassin', 'uri': 'spotify:track:6OXt9aSIr4DSxSR3Qjrtgp'},
-            #          {'name': 'Edge of Desire', 'uri': 'spotify:track:5gbxzSqABThINGDb7vIiwe'}
-            #          ]
-            return render_template("play_artist.html", songs=songs, \
-            token=session["access_token"])
+            songs = songs_by_artist(session["artist-field"], session["access_token"])
+            # songs = [{'name': 'The Age of Worry', 'uri': 'spotify:track:1RywwImkBFUEVcRTBmw7vL', 'image_url': 'https://i.scdn.co/image/ab67616d0000b2733c6bbf44de57c6eb51818694'}, {'name': 'Shot in the Dark', 'uri': 'spotify:track:239yM7BAQ2CkNc61ogPGXo', 'image_url': 'https://i.scdn.co/image/ab67616d0000b273779063301154e835a91a35e0'}]
+            if songs == []:
+                flash(f'You do not have any liked songs by the artist "{session["artist-field"]}".')
+                session.pop("artist-field", None)
+                return redirect(url_for("play"))
+            else:
+                session.pop("artist-field", None)
+                return render_template("play_artist.html", songs=songs, \
+                token=session["access_token"])
         else:
             flash("You must log in first to play.")
             return redirect(url_for("login"))
