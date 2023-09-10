@@ -25,21 +25,28 @@ function updateProgressBar() {
     }, 1000);  // Interval in milliseconds
 }
 
+var songNum;
 document.addEventListener("DOMContentLoaded", () =>
 {
     // Shuffle by artist was chosen
     document.getElementsByName('shuffleArtist')[0].addEventListener('click', () => 
     {
         document.getElementById('gamemode-div').style.display = 'none';
-        document.getElementById('type-artist').style.display = 'block';
+        document.getElementById('song-num-div').style.display = 'block';
     })  
-
+    // Number provided
+    document.getElementById('song-num-submit').addEventListener('click', () => 
+    {
+        songNum = parseInt(document.getElementById('song-num-field').value);
+        document.getElementById('song-num-div').style.display = 'none';
+        document.getElementById('artist-name-div').style.display = 'block';
+    })  
     // Artist name was submitted
-    document.getElementById('artist-submit').addEventListener('click', () =>
+    document.getElementById('artist-name-submit').addEventListener('click', () =>
     {
         updateProgressBar();
-        var chosenArtist = document.getElementById('artist-field').value;
-        document.getElementById('type-artist').style.display = 'none';
+        var chosenArtist = document.getElementById('artist-name-field').value;
+        document.getElementById('artist-name-div').style.display = 'none';
         document.getElementById('progress-div').style.display = 'block';
         document.getElementById('progress-message').innerText = 
         `Asking Spotify for your ${chosenArtist} songs...`;
@@ -52,6 +59,7 @@ document.addEventListener("DOMContentLoaded", () =>
         <!--Greeting-->
         <p>Welcome, {{display_name}} </p>
         <img src="{{profile_pic_url}}">
+
         <!--Choose gamemode-->
         <p></p>
         <div id="gamemode-div">
@@ -61,17 +69,30 @@ document.addEventListener("DOMContentLoaded", () =>
             <button type="submit" class="btn btn-secondary" 
             name="shuffleLibrary">Shuffle entire library</button>
         </div>
-        <!--Shuffle by artist-->
-        <div id="type-artist" style="display: none;">
+
+        <!--Need number-->
+        <div id="song-num-div" style="display: none;">
+            <p></p>
+            <input type="number" class="form-control login-field" id="song-num-field" 
+            name="song-num-field" placeholder="Number of songs"
+            style="width: 20%;">
+            <p></p>
+            <button type="submit" class="btn btn-secondary" 
+            id="song-num-submit" value="submit">Submit</button>
+        </div>
+        
+        <!--Need artist name-->
+        <div id="artist-name-div" style="display: none;">
             <p></p>
             <form method="post">
                 <input type="text" class="form-control login-field" 
-                id ="artist-field" name="artist-field" placeholder="Artist" style="width: 20%;">
+                id ="artist-name-field" name="artist-name-field" placeholder="Artist" style="width: 20%;">
                 <p></p>
                 <button type="submit" class="btn btn-secondary" 
-                id="artist-submit" value="submit">Submit</button>
+                id="artist-name-submit" value="submit">Submit</button>
             </form>
         </div>
+    
         <!--Progress Bar-->
         <p></p>
         <div id="progress-div" style="display: none;">
