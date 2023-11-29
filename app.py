@@ -4,18 +4,29 @@ from datetime import timedelta
 import bcrypt
 import api
 import json
-from random import randint
+from random import randint, shuffle
+import os
+from dotenv import load_dotenv
 # from database import db
 # from models import Users
-# source ~/.bashrc
-# source .venv_music/bin/activate
-# .venv_music/bin/python app.py
 
+## -- NOTES -- ##
+# Backend:
+# To activate the virtual environment: source .venv_music/bin/activate
+# Before starting the server: source ~/.bashrc
+# To start the server: .venv_music/bin/python app.py
+# MySql:
+# To access the sql server: mysql -u root -p
+# Password is in env variables file
+# TODO
+# IMPLEMENT AS MUCH LOGIC IN THE BACKEND AS POSSIBLE
+
+load_dotenv()
 app = Flask(__name__)
-app.secret_key = "Tigers-315700"
+app.secret_key = os.getenv('APP_SECRET_KEY')
 app.permanent_session_lifetime = timedelta(days=1)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:Tigers-315700@localhost/music'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
@@ -82,7 +93,7 @@ def songs_by_artist(artist, token):
     # Gather remainder of songs
     api.request_user_songs(token, offset, last_limit_size, songs)
     # songs[] contains entire library, now filter by artist
-    return [song for song in songs if song["artist"] == artist]
+    return [song for song in songs if song["artist"].lower() == artist.lower().strip()]
 
 
 @app.route("/", methods=["POST", "GET"])
@@ -98,6 +109,7 @@ def home():
         else:
             flash("You must log in first to play.")
             return redirect(url_for("login"))
+
 
 @app.route("/login", methods=["POST", "GET"])
 def login():
@@ -154,10 +166,11 @@ def play():
         #     # session['song_num'] = request.form['number-field']
         #     # return jsonify(message="Number gathered successfully."), 200
         if 'artist-name-field' in request.form:
-            session['artist-name-field'] = request.form['artist-name-field']
+            session['songNum'] = request.form['song-num-field']
+            session['artistName'] = request.form['artist-name-field']
             return redirect(url_for("play_artist"))
-        if 'shuffleLibrary' in request.form:
-            return redirect(url_for("play_library"))
+        # if 'shuffleLibrary' in request.form:
+        #     return redirect(url_for("play_library"))
         else:
             flash("An error occurred. Please try again.")
             return redirect(url_for("play"))
@@ -177,15 +190,24 @@ def play_artist():
         pass
     else:
         if "username" in session:
+            # TODO
+            # if (False): # Check if the artist name is valid
+            #     flash(f'You do not have any liked songs by the artist "{session["artistName"]}".')
+            #     session.pop("artistName", None)
+            #     return redirect(url_for("play"))
+
             # TOGGLE
-            songs = songs_by_artist(session["artist-name-field"], session["access_token"])
-            # songs = [{'name': 'The Age of Worry', 'uri': 'spotify:track:1RywwImkBFUEVcRTBmw7vL', 'image_url': 'https://i.scdn.co/image/ab67616d0000b2733c6bbf44de57c6eb51818694'}, {'name': 'Shot in the Dark', 'uri': 'spotify:track:239yM7BAQ2CkNc61ogPGXo', 'image_url': 'https://i.scdn.co/image/ab67616d0000b273779063301154e835a91a35e0'}]
-            if songs == []:
-                flash(f'You do not have any liked songs by the artist "{session["artist-name-field"]}".')
-                session.pop("artist-name-field", None)
+            # songs = songs_by_artist(session["artistName"], session["access_token"])
+            songs = [{'name': 'The Age of Worry', 'uri': 'spotify:track:1RywwImkBFUEVcRTBmw7vL', 'image_url': 'https://i.scdn.co/image/ab67616d0000b2733c6bbf44de57c6eb51818694'}, {'name': 'Shot in the Dark', 'uri': 'spotify:track:239yM7BAQ2CkNc61ogPGXo', 'image_url': 'https://i.scdn.co/image/ab67616d0000b273779063301154e835a91a35e0'}]
+            if not songs:
+                # TODO 
+                # You do not have 20 songs by Post Malone
+                flash(f'You do not have any liked songs by the artist "{session["artistName"]}".')
+                session.pop("artistName", None)
                 return redirect(url_for("play"))
             else:
-                session.pop("artist-name-field", None)
+                session.pop("artistName", None)
+                shuffle(songs)
                 return render_template("play_artist.html", songs=songs, \
                 token=session["access_token"])
         else:

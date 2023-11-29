@@ -11,17 +11,19 @@ var guess_num = 0;
 var device_id;
 var player;
 var songs = JSON.parse('{{ songs|tojson }}');
+var total_songs = songs.length;
 
 
 function chooseSong(songs) {
-    randomIndex = Math.floor(Math.random() * songs.length);
-    currentSong = songs[randomIndex];
+    // TODO
+    // Make sure selected songs get popped from list
+    currentSong = songs.pop();
+    song_num++;
     document.getElementById('album-image').src = currentSong.image_url;
     // TOGGLE
     document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
     document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
 }
-
 
 function normalize(str) {
     // Convert to lowercase
@@ -55,13 +57,6 @@ function playSong(device_id, uri) {
     })
 }
 
-window.onload = () => {
-    chooseSong(songs)
-    // TOGGLE
-    for (let song of songs) {
-        console.log(`${song.name}   --->    ${normalize(song.name)}`)
-    }
-}
 
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = '{{ token }}';
@@ -83,50 +78,75 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     player.addListener('account_error', ({ message }) => {
         console.error(message);
     });
-
+    
     // Ready
     player.addListener('ready', ({device_id: ID}) => {
         console.log('Ready with Device ID', ID);
         device_id = ID;
     });
-
-    // Click play
-    document.getElementById('togglePlay').onclick = () => {
-        // TOGGLE
+    
+    // Play button clicked
+    document.getElementById('start-button').onclick = () => {
+        // TOGGLE PLAYING THE SONG
         // playSong(device_id, currentSong.uri);
         document.getElementById('start-div').style.display = 'none';
         document.getElementById('guess-div').style.display = 'block';
+        document.getElementById('song-guess-field').focus();
     };
-
-    // Submit song guess
-    document.getElementById('song-submit').onclick = () => {
-        const song_guess = document.getElementById('song-guess').value;
+    
+    // Song guess submitted
+    document.getElementById('song-submit-button').onclick = () => {
+        const song_guess = document.getElementById('song-guess-field').value;
         console.log(`Song submitted: ${song_guess}`)
         if (song_guess.toLowerCase() == normalize(currentSong.name)) {
             console.log('Correct');
             player.togglePlay();
-            song_num++;
-            guess_num = 0;
             chooseSong(songs);
-            document.getElementById('song-guess').value = '';
+            document.getElementById('song-guess-field').value = '';
             document.getElementById('guess-div').style.display = 'none';
             document.getElementById('start-div').style.display = 'block';
         }
     }
-
-    // Skip song
-    document.getElementById('song-skip').onclick = () => {
+    
+    // Song skipped
+    document.getElementById('song-skip-button').onclick = () => {
         player.togglePlay();
-        song_num++;
-        guess_num = 0;
         chooseSong(songs);
-        document.getElementById('song-guess').value = '';
+        document.getElementById('song-guess-field').value = '';
         document.getElementById('guess-div').style.display = 'none';
         document.getElementById('start-div').style.display = 'block';
     }
-    player.connect();
-}
 
+    // Interact with buttons using enter and shift
+    document.addEventListener('keydown', (event) => {
+
+        // Press Shift and Enter
+        if (event.shiftKey && event.key == 'Enter') {
+            if (document.getElementById('guess-div').style.display == 'block') {
+                document.getElementById('song-skip-button').click();
+            }
+        }
+
+        // Press Enter
+        else if (event.key == 'Enter') {
+            // Start button is on the screen
+            if (document.getElementById('start-div').style.display == 'block') {
+                document.getElementById('start-button').click();
+            }
+            // Submit and skip buttons are on the screen
+            if (document.getElementById('guess-div').style.display == 'block') {
+                document.getElementById('song-submit-button').click();
+            }
+        }
+    })
+
+    player.connect();
+    chooseSong(songs)
+    // TOGGLE SHOW NORMALIZED SONG NAMES IN CONSOLE
+    // for (let song of songs) {
+    //     console.log(`${song.name}   --->    ${normalize(song.name)}`)
+    // }
+}
 
 </script>
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
@@ -135,24 +155,24 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         <img style="width: 40%; max-width: 400px;" id="album-image" src="">
         <p></p>
         <!--Start game-->
-        <div id="start-div">
-            <button type="submit" class="btn btn-primary" id="togglePlay">Start</button>
+        <div id="start-div" style="display: block;">
+            <button type="submit" class="btn btn-primary" id="start-button">Start</button>
         </div>
         <!--Submit guesses-->
         <div id="guess-div" style="display: none;">
-            <input type="text" class="form-control login-field" id="song-guess" 
+            <input type="text" class="form-control login-field" id="song-guess-field" 
             placeholder="Song" style="width: 20%;">
             <p></p>
-            <!-- TOGGLE -->
-            <p id="songName"></p>
-            <p id="normalName"></p>
+            <!-- TOGGLE SHOW SONG NAME AND NORMALIZED SONG NAME-->
+            <p id="songName" style="display: block;"></p>
+            <p id="normalName" style="display: block;"></p>
             <!---->
-            <button type="submit"class="btn btn-primary" id="song-submit">Submit</button>
-            <button type="submit"class="btn btn-primary" id="song-skip">Skip</button>
+            <button type="submit"class="btn btn-primary" id="song-submit-button">Submit</button>
+            <button type="submit"class="btn btn-primary" id="song-skip-button">Skip</button>
+            <p></p>
+            <p class="subtext">Submit: Enter</p>
+            <p class="subtext">Skip: Shift + Enter</p>
         </div>
     </div>
-    <!-- {% for song in songs %}
-    <p>{{song["name"], song["uri"], song["image_url"]}}</p>
-    {% endfor %} -->
 </body>
 {% endblock %}
