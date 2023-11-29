@@ -3,28 +3,47 @@
 
 {% block content %}
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <!-- <scipt src="play_script.js"></scipt> -->
 <script>
 var currentSong;
-var song_num = 0;
 var guess_num = 0;
 var device_id;
 var player;
+var correctGuesses = 0;
 var songs = JSON.parse('{{ songs|tojson }}');
 var total_songs = songs.length;
+var testing = true;
 
 
 function chooseSong(songs) {
-    console.log(songs);
-    // TODO
-    // Make sure selected songs get popped from list
+    if (songs.length == 0) {
+        $.ajax({
+            url: 'http://127.0.0.1:8000/play/artist',
+            type: 'POST',
+            contentType: 'application/json',
+            dataType: 'json',
+            data: JSON.stringify({
+                'correctGuesses': correctGuesses,
+                'totalSongs': total_songs
+            }),
+            success: (response) => {
+                window.location.href = response.redirectURL;
+            }
+        })
+        return;
+    }
     currentSong = songs.pop();
-    song_num++;
     document.getElementById('album-image').src = currentSong.image_url;
-    // TOGGLE
-    document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
-    document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
+
+    if (testing) {
+        document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
+        document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
+        document.getElementById('songName').style.display = 'block';
+        document.getElementById('normalName').style.display = 'block';
+    }
 }
+
 
 function normalize(str) {
     // Convert to lowercase
@@ -66,19 +85,19 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         getOAuthToken: cb => { cb(token); },
         volume: 0.5
     });
-    // ERRORS:
-    player.addListener('not_ready', ({ device_id }) => {
-        console.log('Device ID has gone offline', device_id);
-    });
-    player.addListener('initialization_error', ({ message }) => {
-        console.error(message);
-    });
-    player.addListener('authentication_error', ({ message }) => {
-        console.error(message);
-    });
-    player.addListener('account_error', ({ message }) => {
-        console.error(message);
-    });
+    // // LOGS:
+    // player.addListener('not_ready', ({ device_id }) => {
+    //     console.log('Device ID has gone offline', device_id);
+    // });
+    // player.addListener('initialization_error', ({ message }) => {
+    //     console.error(message);
+    // });
+    // player.addListener('authentication_error', ({ message }) => {
+    //     console.error(message);
+    // });
+    // player.addListener('account_error', ({ message }) => {
+    //     console.error(message);
+    // });
     
     // Ready
     player.addListener('ready', ({device_id: ID}) => {
@@ -86,6 +105,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         device_id = ID;
     });
     
+
     // Play button clicked
     document.getElementById('start-button').onclick = () => {
         // TOGGLE PLAYING THE SONG
@@ -95,64 +115,66 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         document.getElementById('song-guess-field').focus();
     };
     
+
     // Song guess submitted
     document.getElementById('song-submit-button').onclick = () => {
         const song_guess = document.getElementById('song-guess-field').value;
         console.log(`Song submitted: ${song_guess}`)
         if (song_guess.toLowerCase() == normalize(currentSong.name)) {
             console.log('Correct');
+            correctGuesses++;
             player.togglePlay();
             chooseSong(songs);
+            document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
             document.getElementById('song-guess-field').value = '';
             document.getElementById('guess-div').style.display = 'none';
             document.getElementById('start-div').style.display = 'block';
         }
     }
     
+
     // Song skipped
     document.getElementById('song-skip-button').onclick = () => {
         player.togglePlay();
         chooseSong(songs);
+        document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
         document.getElementById('song-guess-field').value = '';
         document.getElementById('guess-div').style.display = 'none';
         document.getElementById('start-div').style.display = 'block';
     }
 
+
     // Interact with buttons using enter and shift
     document.addEventListener('keydown', (event) => {
-
         // Press Shift and Enter
         if (event.shiftKey && event.key == 'Enter') {
             if (document.getElementById('guess-div').style.display == 'block') {
                 document.getElementById('song-skip-button').click();
             }
         }
-
         // Press Enter
         else if (event.key == 'Enter') {
-            // Start button is on the screen
             if (document.getElementById('start-div').style.display == 'block') {
                 document.getElementById('start-button').click();
             }
-            // Submit and skip buttons are on the screen
-            if (document.getElementById('guess-div').style.display == 'block') {
+            else if (document.getElementById('guess-div').style.display == 'block') {
                 document.getElementById('song-submit-button').click();
             }
         }
     })
 
+
     player.connect();
     chooseSong(songs)
-    // TOGGLE SHOW NORMALIZED SONG NAMES IN CONSOLE
-    // for (let song of songs) {
-    //     console.log(`${song.name}   --->    ${normalize(song.name)}`)
-    // }
+    document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
 }
+
 
 </script>
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
 <body>
     <div class="wrapper">
+        <p id="song-data" class="subtext"></p>
         <img style="width: 40%; max-width: 400px;" id="album-image" src="">
         <p></p>
         <!--Start game-->
@@ -164,9 +186,9 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             <input type="text" class="form-control login-field" id="song-guess-field" 
             placeholder="Song" style="width: 20%;">
             <p></p>
-            <!-- TOGGLE SHOW SONG NAME AND NORMALIZED SONG NAME-->
-            <p id="songName" style="display: block;"></p>
-            <p id="normalName" style="display: block;"></p>
+            <!-- GETS TOGGLED  FOR TESTING-->
+            <p id="songName" style="display: none;"></p>
+            <p id="normalName" style="display: none;"></p>
             <!---->
             <button type="submit"class="btn btn-primary" id="song-submit-button">Submit</button>
             <button type="submit"class="btn btn-primary" id="song-skip-button">Skip</button>

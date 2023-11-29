@@ -20,8 +20,10 @@ def generate_random_string(length):
     random_string = ''.join(choice(letters_and_digits) for _ in range(length))
     return random_string
 
+
 def get_auth_header(token):
     return {"Authorization": "Bearer " + token}
+
 
 def user_access_url():
     url = 'https://accounts.spotify.com/authorize?'
@@ -91,6 +93,7 @@ def request_user_songs(token, offset, limit, songs):
         })
     return songs
 
+
 def songs_by_artist(songs, artist):
     songs_by_artist = []
     for song in songs:
@@ -105,6 +108,7 @@ def request_user_info(token):
     result = requests.get(url, headers=headers)
     json_result = json.loads(result.content)
     return json_result["images"][0]["url"], json_result["display_name"]
+
 
 def request_user_library_size(token):
     url = "https://api.spotify.com/v1/me/tracks"
