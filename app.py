@@ -78,9 +78,9 @@ def get_progress():
 
 
 def songs_by_artist(artist, token):
+    """ Must gather the entire library then sort by the artist. """
     global progress
     progress = 0
-    # Must gather the entire library then sort by the artist
     library_size = api.request_user_library_size(token)
     num_requests, last_limit_size = divmod(library_size, 50)
     progress_chunk = 100 / num_requests
@@ -196,7 +196,7 @@ def play_artist():
             #     session.pop("artistName", None)
             #     return redirect(url_for("play"))
 
-            # TOGGLE
+            # TOGGLE SONGS FOR TESTING
             # songs = songs_by_artist(session["artistName"], session["access_token"])
             songs = [{'name': 'The Age of Worry', 'uri': 'spotify:track:1RywwImkBFUEVcRTBmw7vL', 'image_url': 'https://i.scdn.co/image/ab67616d0000b2733c6bbf44de57c6eb51818694'}, {'name': 'Shot in the Dark', 'uri': 'spotify:track:239yM7BAQ2CkNc61ogPGXo', 'image_url': 'https://i.scdn.co/image/ab67616d0000b273779063301154e835a91a35e0'}]
             if not songs:
@@ -206,8 +206,13 @@ def play_artist():
                 session.pop("artistName", None)
                 return redirect(url_for("play"))
             else:
-                session.pop("artistName", None)
+                songNum = int(session['songNum'])
+                if len(songs) < songNum: 
+                    flash(f"You only have {len(songs)} songs by {session['artistName']}.")
                 shuffle(songs)
+                songs = songs[:songNum]
+                session.pop("songNum", None)
+                session.pop("artistName", None)
                 return render_template("play_artist.html", songs=songs, \
                 token=session["access_token"])
         else:

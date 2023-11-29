@@ -52,10 +52,15 @@ document.addEventListener("DOMContentLoaded", () =>
     });
 
     // Artist name was submitted
-    document.getElementById('artist-name-submit').addEventListener('click', () =>
+    document.getElementById('artist-name-submit').addEventListener('click', (e) =>
     {
-        updateProgressBar();
+        var songNum = document.getElementById('song-num-field').value;
         var chosenArtist = document.getElementById('artist-name-field').value;
+        if (songNum === '') {
+            e.preventDefault();
+            return;
+        }
+        updateProgressBar();
         document.getElementById('artist-name-div').style.display = 'none';
         document.getElementById('progress-div').style.display = 'block';
         document.getElementById('progress-message').innerText = 
