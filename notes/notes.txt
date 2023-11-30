@@ -1,0 +1,30 @@
+DATABASE NOTES
+
+USERS
+id
+name
+username
+password
+
+USER_GAMES
+user_id
+games_played
+songs_recognized
+songs_presented
+
+
+
+== DISPLAY EXAMPLE == 
+
+-- Most recognizable -- 
+Artist: Midland 
+    (Average Time to recognize a Midland song: 5 seconds)
+Album: The Last Resort 
+    (Average Time to recognize a song from The Last Resort: 7 seconds)
+Song: Sunrise Tells the Story
+    (Average Time: 2 seconds)
+
+-- General Stats --
+Games Played: 128
+Accuracy: 84%
+Average guess time: 8 seconds
