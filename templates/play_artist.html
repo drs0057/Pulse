@@ -13,8 +13,9 @@ var player;
 var correctGuesses = 0;
 var songs = JSON.parse('{{ songs|tojson }}');
 var total_songs = songs.length;
-var testing = true;
+var testing = false;
 
+// TODO: IMPLEMENT A TIMER OF AROUND 20 SECONDS
 
 function chooseSong(songs) {
     if (songs.length == 0) {
@@ -64,6 +65,9 @@ function normalize(str) {
 
 
 function playSong(device_id, uri) {
+    if (testing === true) {
+        return;
+    }
     console.log('Song playing')
     const songUri = uri;
     const token = '{{ token }}';
@@ -108,8 +112,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 
     // Play button clicked
     document.getElementById('start-button').onclick = () => {
-        // TOGGLE PLAYING THE SONG
-        // playSong(device_id, currentSong.uri);
+        playSong(device_id, currentSong.uri);
         document.getElementById('start-div').style.display = 'none';
         document.getElementById('guess-div').style.display = 'block';
         document.getElementById('song-guess-field').focus();
