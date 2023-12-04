@@ -1,20 +1,4 @@
-DATABASE NOTES
-
-USERS
-id
-name
-username
-password
-
-USER_GAMES
-user_id
-games_played
-songs_recognized
-songs_presented
-
-
-
-== DISPLAY EXAMPLE == 
+== DATABASE DISPLAY EXAMPLE == 
 
 -- Most recognizable -- 
 Artist: Midland 
