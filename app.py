@@ -1,46 +1,16 @@
 from flask import Flask, redirect, url_for, render_template, request, session, flash, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from datetime import timedelta
+from models import db, Users, Games, Guesses, Artists, Albums, Songs
 import bcrypt
 import api
 import json
-from random import randint, shuffle
-import os
-from dotenv import load_dotenv
-# from database import db
-# from models import Users
+from random import shuffle
+from config import Config
 
-## -- NOTES -- ##
-# Backend:
-# To activate the virtual environment: source .venv_music/bin/activate
-# Before starting the server: source ~/.bashrc
-# To start the server: .venv_music/bin/python app.py
-# MySql:
-# To access the sql server: mysql -u root -p
-# Password is in env variables file
-# TODO
-# IMPLEMENT AS MUCH LOGIC IN THE BACKEND AS POSSIBLE
-testing = False
-
-load_dotenv()
+# Configure
 app = Flask(__name__)
-app.secret_key = os.getenv('APP_SECRET_KEY')
-app.permanent_session_lifetime = timedelta(days=1)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URI')
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
-
-class Users(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255))
-    username = db.Column(db.String(255))
-    hash_pw = db.Column(db.String(255))
-
-    def __init__(self, name, username, hash_pw):
-        self.name = name
-        self.username = username
-        self.hash_pw = hash_pw
+app.config.from_object(Config)
+db.init_app(app)
+testing = False
 
 
 def add_gamedata_to_DB(gameData):
@@ -125,7 +95,7 @@ def login():
         if found_user:
             # Check password against hash
             password_bytes = password.encode('utf-8')
-            hash_bytes = found_user.hash_pw.encode('utf-8')
+            hash_bytes = found_user.password_hash.encode('utf-8')
             is_valid = bcrypt.checkpw(password_bytes, hash_bytes)
             if not is_valid:
                 flash("Incorrect password.")
@@ -234,16 +204,16 @@ def register():
         elif duplicate_username(username):
             flash("This user already exists.")
             return redirect(url_for("register"))
-        else:
-            # Hash and salt password
-            password_bytes = password.encode('utf-8')
-            salt = bcrypt.gensalt()
-            hash_pw = bcrypt.hashpw(password_bytes, salt)
-            user = Users(name, username, hash_pw)
-            db.session.add(user)
-            db.session.commit()
-            flash("Your account has been created.")
-            return redirect(url_for("home"))
+
+        # Hash and salt password
+        password_bytes = password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        password_hash = bcrypt.hashpw(password_bytes, salt)
+        user = Users(name=name, username=username, password_hash=password_hash)
+        db.session.add(user)
+        db.session.commit()
+        flash("Your account has been created.")
+        return redirect(url_for("home"))
     else:
         return render_template("register.html")
     

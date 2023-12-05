@@ -1,16 +1,15 @@
-DATABASE NOTES
+## -- NOTES -- ##
+# Backend:
+# To activate the virtual environment: source .venv_music/bin/activate
+# Before starting the server: source ~/.bashrc
+# To start the server: .venv_music/bin/python app.py
+# MySql:
+# To access the sql server: mysql -u root -p
+# Password is in env variables file
 
-USERS
-id
-name
-username
-password
 
-USER_GAMES
-user_id
-games_played
-songs_recognized
-songs_presented
+# TODO
+# IMPLEMENT AS MUCH LOGIC IN THE BACKEND AS POSSIBLE
 
 
 
@@ -25,6 +24,6 @@ Song: Sunrise Tells the Story
     (Average Time: 2 seconds)
 
 -- General Stats --
-Games Played: 128
+Games Played: 128 
 Accuracy: 84%
 Average guess time: 8 seconds
