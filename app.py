@@ -10,12 +10,29 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-testing = False
+testing = True
 
 
 def add_gamedata_to_DB(gameData):
     """Adds all game data from a recently finished session to the database."""
     print(gameData)
+    user = db.session.query(Users).filter(Users.username == session['username'])
+    new_game = Games(user_id=user.id)
+    db.session.add(new_game)
+
+    for guess in gameData['guesses']:
+        # Log each guess
+        new_guess = Guesses(
+                    game_id=new_game.id, song_uri=guess['song_uri'],
+                    time_to_guess=guess['time_to_guess'])
+        db.session.add(new_guess)
+
+        # Log the artist, album, and song associated with each guess
+        # TODO: Gather artist, album for each song and create entries in each table
+        artist = Artists(artist_name=artistName)
+        album = Albums()
+    
+    db.session.commit()
 
 
 def duplicate_username(username):
@@ -180,7 +197,6 @@ def play_artist():
         return render_template("play_artist.html", songs=songs, \
         token=session["access_token"])
         
-
 
 @app.route("/account", methods=["POST", "GET"])
 def account():

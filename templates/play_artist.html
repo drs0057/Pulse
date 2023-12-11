@@ -13,9 +13,45 @@ var player;
 var correctGuesses = 0;
 var songs = JSON.parse('{{ songs|tojson }}');
 var total_songs = songs.length;
-var testing = false;
+var guesses = [];
+var testing = true;
 
 // TODO: IMPLEMENT A TIMER OF AROUND 20 SECONDS
+
+// ----- UTILITY FUNCTIONS ---- //
+
+let timerInterval;
+let elapsedTime = 0; //ms
+let startTime;
+
+function updateTimer() {
+    const elapsedSeconds = Math.floor(elapsedTime / 1000);
+    document.getElementById('timerDisplay').innerText = `Time Remaining: ${20 - elapsedSeconds}s`;
+}
+
+
+function controlTimer(action) {
+    if (action === 'start') {
+        startTime = Date.now()
+        timerInterval = setInterval(() => {
+            if (elapsedTime >= 20000) {
+                controlTimer('stop');
+                document.getElementById('song-skip-button').click();
+                return;
+            }
+            elapsedTime = Date.now() - startTime
+            updateTimer();
+        }, 1000);
+    }
+    else if (action === 'stop') {
+        clearInterval(timerInterval);
+    }
+    else if (action === 'reset') {
+        elapsedTime = 0;
+        updateTimer();
+    }
+}
+
 
 function chooseSong(songs) {
     if (songs.length == 0) {
@@ -26,7 +62,8 @@ function chooseSong(songs) {
             dataType: 'json',
             data: JSON.stringify({
                 'correctGuesses': correctGuesses,
-                'totalSongs': total_songs
+                'totalSongs': total_songs,
+                'guesses': guesses 
             }),
             success: (response) => {
                 window.location.href = response.redirectURL;
@@ -37,12 +74,21 @@ function chooseSong(songs) {
     currentSong = songs.pop();
     document.getElementById('album-image').src = currentSong.image_url;
 
-    if (testing) {
-        document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
-        document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
-        document.getElementById('songName').style.display = 'block';
-        document.getElementById('normalName').style.display = 'block';
-    }
+    // if (testing) {
+    //     document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
+    //     document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
+    //     document.getElementById('songName').style.display = 'block';
+    //     document.getElementById('normalName').style.display = 'block';
+    // }
+}
+
+
+function addGuess(song_uri, time_to_guess) {
+    let guess = {
+        'song_uri': song_uri,
+        'time_to_guess': time_to_guess
+    };
+    guesses.push(guess);
 }
 
 
@@ -82,6 +128,8 @@ function playSong(device_id, uri) {
 }
 
 
+// ---- GAME LOGIC ---- //
+
 window.onSpotifyWebPlaybackSDKReady = () => {
     const token = '{{ token }}';
     player = new Spotify.Player({
@@ -116,6 +164,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         document.getElementById('start-div').style.display = 'none';
         document.getElementById('guess-div').style.display = 'block';
         document.getElementById('song-guess-field').focus();
+        controlTimer('start');
     };
     
 
@@ -125,9 +174,13 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         console.log(`Song submitted: ${song_guess}`)
         if (song_guess.toLowerCase() == normalize(currentSong.name)) {
             console.log('Correct');
-            correctGuesses++;
             player.togglePlay();
+            controlTimer('stop');
+            addGuess(currentSong.uri, elapsedTime);
+            correctGuesses++;
+            // Prep for next song
             chooseSong(songs);
+            controlTimer('reset');
             document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
             document.getElementById('song-guess-field').value = '';
             document.getElementById('guess-div').style.display = 'none';
@@ -139,7 +192,11 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     // Song skipped
     document.getElementById('song-skip-button').onclick = () => {
         player.togglePlay();
+        controlTimer('stop');
+        addGuess(currentSong.uri, null);
+        // Prep for next song
         chooseSong(songs);
+        controlTimer('reset');
         document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
         document.getElementById('song-guess-field').value = '';
         document.getElementById('guess-div').style.display = 'none';
@@ -178,6 +235,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 <body>
     <div class="wrapper">
         <p id="song-data" class="subtext"></p>
+        <p id="timerDisplay" class="subtext">Time Remaining: 20s</p>
         <img style="width: 40%; max-width: 400px;" id="album-image" src="">
         <p></p>
         <!--Start game-->

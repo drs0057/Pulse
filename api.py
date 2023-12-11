@@ -102,6 +102,10 @@ def songs_by_artist(songs, artist):
     return songs_by_artist
 
 
+def request_song_info(song_uri):
+    pass
+
+
 def request_user_info(token):
     url = "https://api.spotify.com/v1/me"
     headers = get_auth_header(token)
