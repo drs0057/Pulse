@@ -10,28 +10,56 @@ from config import Config
 app = Flask(__name__)
 app.config.from_object(Config)
 db.init_app(app)
-testing = True
+testing = False
 
 
 def add_gamedata_to_DB(gameData):
     """Adds all game data from a recently finished session to the database."""
     print(gameData)
-    user = db.session.query(Users).filter(Users.username == session['username'])
+    user = db.session.query(Users).filter(Users.username == session['username']).first()
     new_game = Games(user_id=user.id)
     db.session.add(new_game)
+    db.session.flush()
 
+    # Log the artist, album, and song associated with each guess
     for guess in gameData['guesses']:
+        spotify_id = guess['song_uri'][14:]
+        album_name, artist_name, song_name = api.request_song_info(guess['song_uri'], session['access_token'])
+
+        # Artist
+        new_artist = db.session.query(Artists).filter(Artists.artist_name == artist_name).first()
+        if not new_artist:
+            new_artist = Artists(artist_name=artist_name)
+            db.session.add(new_artist)
+            db.session.flush()
+
+        # Album
+        new_album = db.session.query(Albums).filter(Albums.album_name == album_name).first()
+        if not new_album:
+            new_album = Albums(album_name=album_name, artist_id=new_artist.id)
+            db.session.add(new_album)
+            db.session.flush()
+
+        # Song
+        new_song = db.session.query(Songs).filter(Songs.song_name == song_name).first()
+        if not new_song:
+            new_song = Songs(
+                        spotify_id=spotify_id,
+                        song_name=song_name, 
+                        album_id=new_album.id, 
+                        artist_id=new_artist.id
+                        )
+            db.session.add(new_song)
+            db.session.flush()
+
         # Log each guess
         new_guess = Guesses(
-                    game_id=new_game.id, song_uri=guess['song_uri'],
-                    time_to_guess=guess['time_to_guess'])
+                    game_id=new_game.id, 
+                    spotify_id=spotify_id,
+                    time_to_guess=guess['time_to_guess']
+                    )
         db.session.add(new_guess)
 
-        # Log the artist, album, and song associated with each guess
-        # TODO: Gather artist, album for each song and create entries in each table
-        artist = Artists(artist_name=artistName)
-        album = Albums()
-    
     db.session.commit()
 
 

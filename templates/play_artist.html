@@ -74,12 +74,12 @@ function chooseSong(songs) {
     currentSong = songs.pop();
     document.getElementById('album-image').src = currentSong.image_url;
 
-    // if (testing) {
-    //     document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
-    //     document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
-    //     document.getElementById('songName').style.display = 'block';
-    //     document.getElementById('normalName').style.display = 'block';
-    // }
+    if (testing) {
+        document.getElementById('songName').innerText = `Song Name: ${currentSong.name}`;
+        document.getElementById('normalName').innerText = `Normalized Name: ${normalize(currentSong.name)}`;
+        document.getElementById('songName').style.display = 'block';
+        document.getElementById('normalName').style.display = 'block';
+    }
 }
 
 

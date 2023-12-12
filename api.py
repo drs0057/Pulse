@@ -102,8 +102,16 @@ def songs_by_artist(songs, artist):
     return songs_by_artist
 
 
-def request_song_info(song_uri):
-    pass
+def request_song_info(song_uri, token):
+    SpotifyId = song_uri[14:]
+    url = f'https://api.spotify.com/v1/tracks/{SpotifyId}'
+    headers = get_auth_header(token)
+    result = requests.get(url, headers=headers)
+    json_result = json.loads(result.content)
+    albumName = json_result['album']['name']
+    artistName = json_result['artists'][0]['name']
+    songName = json_result['name']
+    return albumName, artistName, songName
 
 
 def request_user_info(token):
