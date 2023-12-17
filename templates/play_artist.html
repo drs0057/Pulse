@@ -16,7 +16,6 @@ var total_songs = songs.length;
 var guesses = [];
 var testing = true;
 
-// TODO: IMPLEMENT A TIMER OF AROUND 20 SECONDS
 
 // ----- UTILITY FUNCTIONS ---- //
 
@@ -54,7 +53,10 @@ function controlTimer(action) {
 
 
 function chooseSong(songs) {
+    // Returns boolean stating whether to terminate
     if (songs.length == 0) {
+        document.getElementById('guess-div').style.display = 'none';
+        document.getElementById('terminate-text').innerText = 'Saving your game data...';
         $.ajax({
             url: 'http://127.0.0.1:8000/play/artist',
             type: 'POST',
@@ -69,7 +71,7 @@ function chooseSong(songs) {
                 window.location.href = response.redirectURL;
             }
         })
-        return;
+        return true;
     }
     currentSong = songs.pop();
     document.getElementById('album-image').src = currentSong.image_url;
@@ -80,6 +82,7 @@ function chooseSong(songs) {
         document.getElementById('songName').style.display = 'block';
         document.getElementById('normalName').style.display = 'block';
     }
+    return false;
 }
 
 
@@ -179,12 +182,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             addGuess(currentSong.uri, elapsedTime);
             correctGuesses++;
             // Prep for next song
-            chooseSong(songs);
+            let terminate = chooseSong(songs);
             controlTimer('reset');
-            document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
-            document.getElementById('song-guess-field').value = '';
-            document.getElementById('guess-div').style.display = 'none';
-            document.getElementById('start-div').style.display = 'block';
+            if (!terminate) {
+                document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
+                document.getElementById('song-guess-field').value = '';
+                document.getElementById('guess-div').style.display = 'none';
+                document.getElementById('start-div').style.display = 'block';
+            }
         }
     }
     
@@ -195,12 +200,14 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         controlTimer('stop');
         addGuess(currentSong.uri, null);
         // Prep for next song
-        chooseSong(songs);
+        let terminate = chooseSong(songs);
         controlTimer('reset');
-        document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
-        document.getElementById('song-guess-field').value = '';
-        document.getElementById('guess-div').style.display = 'none';
-        document.getElementById('start-div').style.display = 'block';
+        if (!terminate) {
+            document.getElementById("song-data").innerText = `Song: ${total_songs - songs.length}/${total_songs}`
+            document.getElementById('song-guess-field').value = '';
+            document.getElementById('guess-div').style.display = 'none';
+            document.getElementById('start-div').style.display = 'block';
+        }
     }
 
 
@@ -257,6 +264,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             <p class="subtext">Submit: Enter</p>
             <p class="subtext">Skip: Shift + Enter</p>
         </div>
+        <p id="terminate-text"></p>
     </div>
 </body>
 {% endblock %}
