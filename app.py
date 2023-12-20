@@ -6,6 +6,7 @@ import json
 from random import shuffle
 from config import Config
 
+
 # Configure
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -13,9 +14,95 @@ db.init_app(app)
 testing = False
 
 
+def find_user_gamedata(username):
+    """Returns a dictionary of a user's gamedata."""
+        # Fastest artist
+    artist_times = db.session.query(
+        Artists.artist_name, 
+        db.func.avg(Guesses.time_to_guess)
+    ).join(Songs, Songs.artist_id == Artists.id
+    ).join(Guesses, Guesses.spotify_id == Songs.spotify_id
+    ).join(Games, Games.id == Guesses.game_id
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).group_by(Artists.artist_name
+    ).all()
+    fastest_artist = min(artist_times, key=lambda x: x[1] if x[1] else float("inf"))
+    fastest_artist_time = float(round(fastest_artist[1] / 1000, 2))
+
+    # Fastest Album
+    album_times = db.session.query(
+        Albums.album_name, 
+        db.func.avg(Guesses.time_to_guess)
+    ).join(Songs, Songs.album_id == Albums.id
+    ).join(Guesses, Guesses.spotify_id == Songs.spotify_id
+    ).join(Games, Games.id == Guesses.game_id
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).group_by(Albums.album_name
+    ).all()
+    fastest_album = min(album_times, key=lambda x: x[1] if x[1] else float("inf"))
+    fastest_album_time = float(round(fastest_album[1] / 1000, 2))
+
+    # Fastest Song
+    song_times = db.session.query(
+        Songs.song_name, 
+        db.func.avg(Guesses.time_to_guess)
+    ).join(Guesses, Guesses.spotify_id == Songs.spotify_id
+    ).join(Games, Games.id == Guesses.game_id
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).group_by(Songs.song_name
+    ).all()
+    fastest_song = min(song_times, key=lambda x: x[1] if x[1] else float("inf"))
+    fastest_song_time = float(round(fastest_song[1] / 1000, 2))
+
+    # Games played
+    games_played = db.session.query(
+        db.func.count(Games.id)
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).scalar()
+
+    # Chance to recognize
+    total_guesses = db.session.query(
+        db.func.count(Guesses.id)
+    ).join(Games, Games.id == Guesses.game_id
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).scalar()
+    correct_guesses = db.session.query(
+        db.func.count(Guesses.id)
+    ).join(Games, Games.id == Guesses.game_id
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).filter(Guesses.time_to_guess != None
+    ).scalar()
+    chance_to_recognize = int(correct_guesses / total_guesses * 100)
+
+    # Average guess time
+    avg_guess_time = db.session.query(
+        db.func.avg(Guesses.time_to_guess)
+    ).join(Games, Games.id == Guesses.game_id
+    ).join(Users, Users.id == Games.user_id
+    ).filter(Users.username == username
+    ).scalar()
+    avg_guess_time = float(round(avg_guess_time / 1000, 2))
+ 
+
+    gameData = {
+        "fastest_artist": (fastest_artist[0], fastest_artist_time),
+        "fastest_album": (fastest_album[0], fastest_album_time),
+        "fastest_song": (fastest_song[0], fastest_song_time),
+        "games_played": games_played,
+        "chance_to_recognize": chance_to_recognize,
+        "avg_guess_time": avg_guess_time
+    }
+    return gameData 
+
+
 def add_gamedata_to_DB(gameData):
     """Adds all game data from a recently finished session to the database."""
-    print(gameData)
     user = db.session.query(Users).filter(Users.username == session['username']).first()
     new_game = Games(user_id=user.id)
     db.session.add(new_game)
@@ -267,9 +354,9 @@ def game_data():
     if "username" not in session:
         flash("You must login before viewing game data.")
         return redirect(url_for("login"))
-    
     user = find_user(session["username"])
-    return render_template("game_data.html", user=user)
+    gamedata = find_user_gamedata(user.username)
+    return render_template("game_data.html", user=user, gamedata=gamedata)
         
     
 @app.route("/view_users")
@@ -281,5 +368,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(port=8000, debug=True)
-    
-
