@@ -351,11 +351,12 @@ def register():
 
 @app.route("/game_data")
 def game_data():
-    # TODO
-    # Make sure user has access token
     if "username" not in session:
         flash("You must login before viewing game data.")
         return redirect(url_for("login"))
+    if 'access_token' not in session:
+        flash("You must login to Spotify before viewing game data.")
+        return redirect(url_for("home"))
     user = find_user(session["username"])
     gamedata = find_user_gamedata(user.username)
     image_uris = api.request_gamedata_images(gamedata, session["access_token"])

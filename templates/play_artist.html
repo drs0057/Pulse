@@ -4,7 +4,6 @@
 {% block content %}
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<!-- <scipt src="play_script.js"></scipt> -->
 <script>
 var currentSong;
 var guess_num = 0;
@@ -243,7 +242,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
     <div class="wrapper">
         <p id="song-data" class="subtext"></p>
         <p id="timerDisplay" class="subtext">Time Remaining: 20s</p>
-        <img style="width: 40%; max-width: 400px;" id="album-image" src="">
+        <img class="img-rounded" style="width: 40%; max-width: 400px;" id="album-image" src="">
         <p></p>
         <!--Start game-->
         <div id="start-div" style="display: block;">

@@ -3,24 +3,59 @@
 
 {% block content %}
 <!--Index 0 is name, index 1 is time.-->
-{% set artist = gamedata.fastest_artist %}
-{% set album = gamedata.fastest_album %}
-{% set song = gamedata.fastest_song %}
-<p>Most Recognizable</p>
-<p>Artist: {{artist[0]}}</p>
-<img style="width: 15%; max-width: 400px;" src="{{image_uris['artist_url']}}">
-<p>Average time to recognize a {{artist[0]}} song: 
-    {{artist[1]}} seconds.</p>
-<p>Album: {{album[0]}}</p>
-<img style="width: 15%; max-width: 400px;" src="{{image_uris['album_url']}}">
-<p>Average time to recognize a song from {{album[0]}}: 
-    {{gamedata.fastest_album[1]}} seconds.</p>
-<p>Song: {{song[0]}}</p>
-<p>Average time to recognize the song {{song[0]}}: 
-    {{song[1]}} seconds.</p>
-<br>
-<p>General Stats</p>
-<p>Total games played: {{gamedata.games_played}}</p>
-<p>You recognize {{gamedata.chance_to_recognize}}% of songs.</p>
-<p>Average guess time: {{gamedata.avg_guess_time}}</p>
+<link rel="stylesheet" type="text/css" href="{{url_for('static', filename='gamedata_style.css')}}">
+<div class="container">
+    <!-- Most Recognizable Section -->
+    <div class="card large-card">
+        <div class="card-header">Most Recognizable</div>
+        <div class="card-body">
+            {% set artist = gamedata.fastest_artist %}
+            {% set album = gamedata.fastest_album %}
+            {% set song = gamedata.fastest_song %}
+            <div class="media">
+                <img class="img-rounded" src="{{image_uris['artist_url']}}">
+                <div class="media-body">
+                    <div>Artist:</div>
+                    <div class="data-result">{{artist[0]}}</div>
+                    <div>Average time to recognize a {{artist[0]}} song:</div> 
+                    <div class="data-result">{{artist[1]}} seconds</div>
+                </div>
+            </div>
+            <br>
+            <div class="media">
+                <img class="img-rounded" src="{{image_uris['album_url']}}">
+                <div class="media-body">
+                    <div>Album:</div>
+                    <div class="data-result">{{album[0]}}</div>
+                    <div>Average time to recognize a song from "{{album[0]}}"":</div> 
+                    <div class="data-result">{{album[1]}} seconds</div>
+                </div>
+            </div>
+            <div class="media">
+                <img class="img-rounded" src="{{image_uris['song_artist_url']}}">
+                <div class="media-body">
+                    <div>Song:</div>
+                    <div class="data-result">{{song[0]}}</div>
+                    <div>Average time to recognize the song "{{song[0]}}" 
+                        by {{image_uris['song_artist_name']}}:</div> 
+                    <div class="data-result">{{song[1]}} seconds</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- General Stats Section -->
+    <div class="card small-card">
+        <div class="card-header">General Stats</div>
+        <div class="card-body">
+            <div>Total games played:</div>
+            <div class="data-result">{{gamedata.games_played}}</div>
+            <div>The chance you recognize a song:</div> 
+            <div class="data-result">{{gamedata.chance_to_recognize}}%</div>
+            <div>Average guess time:</div> 
+            <div class="data-result">{{gamedata.avg_guess_time}} seconds</div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}

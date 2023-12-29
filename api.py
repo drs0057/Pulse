@@ -73,14 +73,21 @@ def request_gamedata_images(gamedata, token):
     result = requests.get(url + query, headers=headers)
     json_result = json.loads(result.content)
     album_url = json_result['albums']['items'][0]['images'][0]['url']
-    # Song
-    # query = f"?q={gamedata['fastest_song'][0]}&type=track"
-    # result = requests.get(url + query, headers=headers)
-    # json_result = json.loads(result.content)
-    # song_url = json_result['tracks']['items'][0]['images'][0]['url']
+    # Song will take the artist's image
+    query = f"?q={gamedata['fastest_song'][0]}&type=track"
+    result = requests.get(url + query, headers=headers)
+    json_result = json.loads(result.content)
+    song_artist = json_result['tracks']['items'][0]['artists'][0]['name']
+    query = f"?q={song_artist}&type=artist"
+    result = requests.get(url + query, headers=headers)
+    json_result = json.loads(result.content)
+    song_artist_url = json_result['artists']['items'][0]['images'][0]['url']
+
     image_uris = {
         "artist_url": artist_url,
         "album_url": album_url,
+        "song_artist_url": song_artist_url,
+        "song_artist_name": song_artist
     }
     return image_uris
 
