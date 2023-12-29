@@ -2,6 +2,25 @@
 {% block title %}{{user.name}}'s Game Data{% endblock %}
 
 {% block content %}
-<div class="container-fluid">{{user.name}}'s Game Data:</div>
-<p>{{gamedata}}</p>
+<!--Index 0 is name, index 1 is time.-->
+{% set artist = gamedata.fastest_artist %}
+{% set album = gamedata.fastest_album %}
+{% set song = gamedata.fastest_song %}
+<p>Most Recognizable</p>
+<p>Artist: {{artist[0]}}</p>
+<img style="width: 15%; max-width: 400px;" src="{{image_uris['artist_url']}}">
+<p>Average time to recognize a {{artist[0]}} song: 
+    {{artist[1]}} seconds.</p>
+<p>Album: {{album[0]}}</p>
+<img style="width: 15%; max-width: 400px;" src="{{image_uris['album_url']}}">
+<p>Average time to recognize a song from {{album[0]}}: 
+    {{gamedata.fastest_album[1]}} seconds.</p>
+<p>Song: {{song[0]}}</p>
+<p>Average time to recognize the song {{song[0]}}: 
+    {{song[1]}} seconds.</p>
+<br>
+<p>General Stats</p>
+<p>Total games played: {{gamedata.games_played}}</p>
+<p>You recognize {{gamedata.chance_to_recognize}}% of songs.</p>
+<p>Average guess time: {{gamedata.avg_guess_time}}</p>
 {% endblock %}

@@ -179,7 +179,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
             console.log('Correct');
             player.togglePlay();
             controlTimer('stop');
-            addGuess(currentSong.uri, elapsedTime);
+            addGuess(currentSong.uri, Date.now() - startTime);
             correctGuesses++;
             // Prep for next song
             let terminate = chooseSong(songs);

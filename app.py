@@ -351,12 +351,16 @@ def register():
 
 @app.route("/game_data")
 def game_data():
+    # TODO
+    # Make sure user has access token
     if "username" not in session:
         flash("You must login before viewing game data.")
         return redirect(url_for("login"))
     user = find_user(session["username"])
     gamedata = find_user_gamedata(user.username)
-    return render_template("game_data.html", user=user, gamedata=gamedata)
+    image_uris = api.request_gamedata_images(gamedata, session["access_token"])
+    return render_template("game_data.html", user=user, gamedata=gamedata,
+                           image_uris=image_uris)
         
     
 @app.route("/view_users")
