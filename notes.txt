@@ -25,5 +25,5 @@ Song: Sunrise Tells the Story
 
 -- General Stats --
 Games Played: 128 
-Accuracy: 84%
+Chance to recognize: 84%
 Average guess time: 8 seconds
