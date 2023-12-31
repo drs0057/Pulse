@@ -2,8 +2,18 @@
 {% block title %}{{user.name}}'s Account{% endblock %}
 
 {% block content %}
-<p>Name:    {{user.name}}</p>
-<p>Username:    {{user.username}}</p>
+<div class="wrapper">
+    <div class="media">
+        <div style="margin:auto; color: white;">
+            <p>Name: {{user.name}}</p>
+            <p>Username: {{user.username}}</p>
+        </div>
+    </div>
+    <div>
+        <a class="link" href="/gamedata">View Game Data</a>
+        <p></p>
+        <a class="link" href="/logout">Logout</a>
+    </div>
+</div>
 
-<a class="link" href="/logout">Logout.</a>
 {% endblock %}

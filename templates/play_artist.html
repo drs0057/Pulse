@@ -13,7 +13,7 @@ var correctGuesses = 0;
 var songs = JSON.parse('{{ songs|tojson }}');
 var total_songs = songs.length;
 var guesses = [];
-var testing = true;
+var testing = false;
 
 
 // ----- UTILITY FUNCTIONS ---- //
@@ -113,7 +113,7 @@ function normalize(str) {
 
 
 function playSong(device_id, uri) {
-    if (testing === true) {
+    if (testing == true) {
         return;
     }
     console.log('Song playing')
@@ -239,7 +239,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
 </script>
 <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='style.css')}}">
 <body>
-    <div class="wrapper">
+    <div style="padding-top: 50px;" class="wrapper">
         <p id="song-data" class="subtext"></p>
         <p id="timerDisplay" class="subtext">Time Remaining: 20s</p>
         <img class="img-rounded" style="width: 40%; max-width: 400px;" id="album-image" src="">

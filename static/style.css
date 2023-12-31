@@ -1,25 +1,36 @@
-body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
-    font-family: 'Roboto';
-    color: #404240;
-    background-color: white;
+/* HOVER COLOR = #307156; */
+/* BANNER COLOR = #8096ad */
+body {
+    background-color: black !important;
 }
-.navbar.navbar-expand-lg.bg-body-tertiary{
+.block-content-wrapper{
+    width: 80%;
+    margin: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+
+    /* Flexbox Properties */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.nav-item:hover{
+    color: green;
+}
+.custom-navbar{
     margin-top: 1.5%;
+    --bs-navbar-bg: #516f8f;
+    --bs-navbar-color: white;
 }
-.navbar.navbar-expand-lg.bg-body-tertiary .nav-link:hover, .sub-nav-link:hover, .link:hover{
+.link:hover, .sub-nav-link:hover{
     color: #307156;
 }
 .link{
     text-decoration: none;
-    color: #404240;
-}
-.wrapper{
-   width: 70%;
-   position: absolute;
-   top: 50%;
-   left: 50%;
-   transform: translate(-50%, -50%);
-   text-align: center;
+    color: green;
 }
 .login-field{
     width: 50%;
@@ -45,11 +56,34 @@ body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
     padding: 0;
     font-size: 12px;
 }
+
+/* IMAGES */
+.user-profile-picture {
+    width: 60px;
+    height: 60px;
+}
 .img-rounded {
     border-radius: 8px;
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
     margin-bottom: 10px;
 }
+
+.account-media {
+    display: flex;
+    margin: auto;
+    margin-bottom: 2rem;
+    background-color: #307156;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    width: 20%
+}
+
+.my-button {
+    background-color: #307156 !important;
+}
+
+
 /* * {
   outline: 1px solid red;
 } */
