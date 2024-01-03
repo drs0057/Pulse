@@ -33,7 +33,7 @@ def user_access_url():
         'redirect_uri': redirect_uri,
         'state': generate_random_string(16),
         'scope': 'user-library-read streaming user-read-email user-read-private',
-        'show_dialog': False
+        'show_dialog': True
     }
     user_access_url = url + urlencode(data)
     return user_access_url

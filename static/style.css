@@ -1,17 +1,30 @@
-body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
+:root {
+    --color1: #404240;
+    --color2: white;
+    --color3: #307156;
+    --color4: #d7f5e0;
+    --color5: #c3c7c4;
+}
+
+body, .custom-navbar .nav-link, .container-fluid{
     font-family: 'Roboto';
-    color: #404240;
-    background-color: white;
+    color: var(--color1);
+    background-color: var(--color2);
 }
-.navbar.navbar-expand-lg.bg-body-tertiary{
-    margin-top: 1.5%;
+.container-fluid {
+    height: 80px;
 }
-.navbar.navbar-expand-lg.bg-body-tertiary .nav-link:hover, .sub-nav-link:hover, .link:hover{
-    color: #307156;
+.custom-navbar{
+    margin-top: 20px;
+    height: 100px;
+    background-color: var(--color5) !important;
+}
+.custom-navbar .nav-link:hover, .sub-nav-link:hover, .link:hover{
+    color: var(--color3);
 }
 .link{
     text-decoration: none;
-    color: #404240;
+    color: var(--color1);
 }
 .wrapper{
    width: 70%;
@@ -20,9 +33,13 @@ body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
    left: 50%;
    transform: translate(-50%, -50%);
    text-align: center;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   flex-direction: column;
 }
 .login-field{
-    width: 50%;
+    width: 100%;
     text-align: center;
     margin: auto;
 }
@@ -30,14 +47,14 @@ body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
     margin: auto;
 }
 .progress-bar-container{
-    background-color: white;
-    outline: 2px solid #404240;
+    background-color: var(--color2);
+    outline: 2px solid var(--color1);
     height: 20px;
     width: 100%;
 }
 .progress-bar{
     height: 100%;
-    background-color: #404240;
+    background-color: var(--color1);
     width: 0%;
 }
 .subtext{
@@ -50,9 +67,77 @@ body, .navbar.navbar-expand-lg.bg-body-tertiary .nav-link, .container-fluid{
     box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.5);
     margin-bottom: 10px;
 }
-/* * {
-  outline: 1px solid red;
-} */
+
+/* ACCOUNT PAGE */
+.card.account-card {
+    width: 20%;
+}
+.media.account-media {
+    flex-direction: column;
+    margin-bottom: 0rem;
+}
+.media-body.account-media-body {
+    padding-left: 0rem;
+}
+
+
+/* GAMEDATA PAGE */
+.gamedata-wrapper {
+    align-items: center;
+    width: 70%;
+    padding-top: 20px;
+    margin: auto;
+    display: flex;
+}
+.card {
+    padding: 20px;
+    margin-bottom: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    background-color: var(--color4);
+    color: var(--color3);
+}
+.large-card {
+    flex: 7.5;
+}
+.small-card {
+    flex: 2.5;
+    margin-left: 20px;
+}
+.card-header {
+    background-color: var(--color4);
+    font-weight: bold;
+    font-size: 1.7em;
+    margin-bottom: 15px;
+}
+.card-body {
+    font-size: 1em;
+}
+.media {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.media-body {
+    flex: 1;
+    padding-left: 4rem;
+}
+.gamedata-img {
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 4px 8px 8px rgba(0, 0, 0, 0.8);
+    margin-bottom: 20px;
+    width: 20%;
+    max-width: 400px;
+}
+.data-result {
+    font-size: 1.2rem;
+    margin-bottom: 1.0rem;
+    color: black;
+    font-weight: bold;
+}
+
+/* TESTING */
 .test1{
     outline: 3px solid green !important;
     color: green !important;

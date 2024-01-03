@@ -13,7 +13,7 @@ var correctGuesses = 0;
 var songs = JSON.parse('{{ songs|tojson }}');
 var total_songs = songs.length;
 var guesses = [];
-var testing = true;
+var testing = false;
 
 
 // ----- UTILITY FUNCTIONS ---- //
@@ -251,7 +251,7 @@ window.onSpotifyWebPlaybackSDKReady = () => {
         <!--Submit guesses-->
         <div id="guess-div" style="display: none;">
             <input type="text" class="form-control login-field" id="song-guess-field" 
-            placeholder="Song" style="width: 20%;">
+            placeholder="Song" style="width: 100%;">
             <p></p>
             <!-- GETS TOGGLED  FOR TESTING-->
             <p id="songName" style="display: none;"></p>
