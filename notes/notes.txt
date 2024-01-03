@@ -1,4 +1,19 @@
-== DATABASE DISPLAY EXAMPLE == 
+## -- NOTES -- ##
+# Backend:
+# To activate the virtual environment: source .venv_music/bin/activate
+# Before starting the server: source ~/.bashrc
+# To start the server: .venv_music/bin/python app.py
+# MySql:
+# To access the sql server: mysql -u root -p
+# Password is in env variables file
+
+
+# TODO
+# IMPLEMENT AS MUCH LOGIC IN THE BACKEND AS POSSIBLE
+
+
+
+== DISPLAY EXAMPLE == 
 
 -- Most recognizable -- 
 Artist: Midland 
@@ -9,6 +24,6 @@ Song: Sunrise Tells the Story
     (Average Time: 2 seconds)
 
 -- General Stats --
-Games Played: 128
-Accuracy: 84%
+Games Played: 128 
+Chance to recognize: 84%
 Average guess time: 8 seconds
