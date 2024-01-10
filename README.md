@@ -61,7 +61,18 @@ Once a user has played at least one game, they may access the game data page. Th
   <img src="README_media/gamedata.png" alt="Game data page">
 </div>
 <br>
+
+Pulse stores the data for these games in a MySQL database. The design for this database is shown below:
+<div align="center">
+  <img src="README_media/databaseDesign.png" alt="Database design">
+</div>
+
+<br>
+<br>
 <br>
 
 
 # Lessons Learned
+Below I will discuss several of the lessons learned throughout this project, which will also serve to highlight some of the flaws of the project. These are issues that needed to be addressed in the middle of the project, or issues that still plague the project and will need to be handled early on in future projects.
+### Design database and backend around third-party web API
+When a third-party web API is a major part of the project's infrastructure, the project will have to be built around this API. The project is always subject to change, but the web API it uses is not. This fact must be kept in mind while designing any part of the project that will query, store, or utilize the data provided by the API. Pulse's load times are occasionally long due to unnecessary querying of Spotify's web API. For example, song data for the "Game Data" page is queried from Spotify each time this page is loaded, due to insufficient data being stored in the local MySQL database. In fact, artist/album/song data for that page relies on Spotify's "search" API, meaning results loaded into the game data page are not always accurate, and may, for example, display the wrong song. The issue could have been avoided by designing the database around Spotify's available endpoints from the very start. 
