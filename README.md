@@ -11,19 +11,32 @@ https://github.com/drs0057/Pulse/assets/118777627/ab495f5d-bd15-4701-bcef-ecd0bb
 # Spotify Authentification
 Pulse operates by accessing a user's Spotify account and requesting the appropriate songs. Once a user creates an account with Pulse and navigates to the play tab, they will be redirected to Spotify to give Pulse consent to access their library and play music on their account's behalf:
 
-![Spotify permission page]
+<div align="center">
+  <img src="README_media/spotifyPermission.png" alt="Spotify permission page" style="width:50%;">
+</div>
 
 
-# Account Creation and Spotify Authentication
-Spotify only allows so many songs to be requested from a user's library at a time. This creates a 10+ second waiting time once an artist's name is submitted. A progress bar serves to show the user the time remaining for the backend to access the entirety of their library from the Spotify servers:
+# Starting the game
+The user begins the game by selecting a game mode (only one type is currently supported). Next, the user will select the number of songs they wish to guess and the name of an artist. 
+Spotify only allows so many songs to be requested from a user's library at a time. This creates a 10+ second waiting time once an artist's name is submitted. A progress bar serves to show the user the time remaining for the backend to access the entirety of their library from the Spotify servers. Once this is complete, they will be redirected to the game and may begin.
 
-![Progress bar](README_pictures/progressBar.png)
+<div align="center">
+  <img src="README_media/gameInfo.png" alt="Game Information" style="width:50%;">
+</div>
+<br>
+<div align="center">
+  <img src="README_media/progressBar.png" alt="Progress Bar" style="width:70%;">
+</div>
+
 
 
 # The Game
 Below is a picture of the game in action:
 
-![User is being asked to submit a song guess](README_pictures/songGuess.png)
+<div align="center">
+  <img src="README_media/songGuess.png" alt="User is being asked to submit a song guess" style="width:40%;">
+</div>
+<br>
 
 The user is currently being asked to guess the name of the song as it plays through their speakers. The album cover that contains the song is displayed to aid the user. If the user knows the name of the song, they can input it in the text field and hit 'Submit'. They may optionally hit the 'Skip' button if they cannot remember the song. If the user does not guess the song within 20 seconds, the song is automatically skipped. Keyboard shortcuts are provided on the screen to aid the user in submitting their guesses as fast as possible.
 
@@ -33,8 +46,13 @@ The user is currently being asked to guess the name of the song as it plays thro
 Song titles can be complicated. Titles may contain symbols in place of words ($ for S, & for and), names of featured artists, or performance venues/dates in the case of live recordings.
 This makes accurately guessing the exact song title very difficult.
 Pulse removes this concern to create a more enjoyable playing experience.
-Song names are normalized and stripped to only contain the title of the song in its most simple form. Below are some examples of song guesses that Pulse will look for. Note how long, complicated titles are greatly simplified:
+Song names are normalized and stripped to only contain the title of the song in its most simple form. These simple song names allow the user to focus more on guessing the actual name of the song, as opposed to worrying about the exact nature of their text input. Below are some examples of song guesses that Pulse will look for. Note how long, complicated titles are greatly simplified:
 
-![Normalized song names](README_pictures/normalizedNames.png)
 
-These simple song names allow the user to focus more on guessing the actual name of the song, as opposed to worrying about the exact nature of their text input.
+<div align="center">
+  <img src="README_media/normalizedNames.png" alt="Normalized song names">
+</div>
+
+
+# Game Data
+Once a user has played at least one game, they may access the game data page. This page gives a user some insight into all the games they have played. Pulse will show the user their most recognized artist, album and song. General data about their global play statistics is also available. If a user has played several games, they can use this page to gauge what aspects of their song library that they are most familiar with. This is the power of Pulse.
