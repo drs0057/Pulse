@@ -32,7 +32,7 @@ Spotify only allows so many songs to be requested from a user's library at a tim
 
 
 # The Game
-Below is a picture of the game in action. The user is currently being asked to guess the name of the song as it plays through their speakers. The album cover that contains the song is displayed to aid the user. If the user knows the name of the song, they can input it in the text field and hit 'Submit'. They may optionally hit the 'Skip' button if they cannot remember the song. If the user does not guess the song within 20 seconds, the song is automatically skipped. Keyboard shortcuts are provided on the screen to aid the user in submitting their guesses as fast as possible.
+Below is a picture of the game in action. The user is currently being asked to guess the name of the song as it plays through their speakers. The album cover associated with the song is displayed to aid the user. If the user knows the name of the song, they can input it in the text field and hit 'Submit'. They may optionally hit the 'Skip' button if they cannot remember the song. If the user does not guess the song within 20 seconds, the song is automatically skipped. Keyboard shortcuts are provided on the screen to aid the user in submitting their guesses as fast as possible.
 
 
 <div align="center">
