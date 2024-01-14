@@ -2,6 +2,7 @@
 Pulse is a music trivia game that tests a user's knowledge of the music they listen to. 
 First, Pulse will access the user's Spotify account. They will then be presented with multiple songs from their Spotify library and will be asked to guess the name of the song as fast as possible by ear.
 The user can then view interesting statistics regarding their performance on the 'Game Data' page.
+This README provides a showcase of the website's major functions, along with a brief discussion of lessons learned at the end.
 
 Below is a brief demo with audio:
 
