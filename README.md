@@ -6,7 +6,8 @@ This README provides a showcase of the website's major functions, along with a b
 
 Below is a brief demo with audio:
 
-https://github.com/drs0057/Pulse/assets/118777627/ab495f5d-bd15-4701-bcef-ecd0bb31bee7
+https://github.com/drs0057/Pulse/assets/118777627/5238fe27-405d-43af-b140-fc74220a503b
+
 
 
 # Spotify Authentification
